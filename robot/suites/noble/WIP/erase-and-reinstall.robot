@@ -9,19 +9,18 @@ Select Language
 	[Documentation]		Select Language, we will default to English - REVERT MOVE POINTER TO AFTER PR MERGED
 	Match	${T}/language.png	120
 	Move Pointer To ${T}/next.png
-	Move Pointer To (520, 414)
 	Click LEFT Button
 
 A11y Slide
 	[Documentation]		Accessibility Slide
 	Match	${T}/a11y.png	10
-	Move Pointer To (520, 414)
+	Move Pointer To ${T}/next.png
 	Click LEFT Button
 
 Keyboard Layout
 	[Documentation]		Keyboard Layout Slide
 	Match	${T}/keyboard-layout.png	10
-	Move Pointer To (520, 414)
+	Move Pointer To ${T}/next.png
 	Click LEFT Button
 
 Internet Connection
@@ -33,7 +32,7 @@ Internet Connection
 Interactive vs Automated
 	[Documentation]		Interactive vs automated installation slide
 	Match	${T}/interactive-vs-automated.png		10
-	Move Pointer To (520, 414)
+	Move Pointer To ${T}/next.png
 	Click LEFT Button
 
 Default vs Extended
@@ -43,28 +42,28 @@ Default vs Extended
 	Click LEFT Button
 
 Proprietary Software
-	[Documentation]		CLICKING NEXT AFTER THIS SLIDE EXITS THE INSTALLER?! Slide prompting proprietary software installation
+	[Documentation]		Choose whether to install proprietary software such as Nvidia drivers
 	Match	${T}/proprietary-software.png		10
-	Move Pointer To (520, 414)
+	Move Pointer To ${T}/next.png
 	Click LEFT Button
 
 How do you want to install Ubuntu
 	[Documentation]		Erase disk etc vs manual
 	Match	${T}/how-to-install.png		10
-	Move Pointer To (520, 414)
+	Move Pointer To ${T}/next.png
 	Click LEFT Button
 
 Select Erase Disk and Reinstall
-	[Documentation]		We assume we're wiping a machine here. Not ideal.
+	[Documentation]		Erase the entire disk and reinstall
 	Move Pointer To		${T}/erase-disk-install-ubuntu.jpeg
 	Click LEFT Button
-	Move Pointer To (520, 414)
+	Move Pointer To ${T}/next.png
 	Click LEFT Button
 
 Choose Where to Install Ubuntu
 	[Documentation]		Choose the drive to install on - correct one pre-selected
 	Match	${T}/choose-where-to-install.jpeg
-	Move Pointer To (520, 414)
+	Move Pointer To ${T}/next.png
 	Click LEFT Button
 
 Create Account
@@ -82,7 +81,7 @@ Create Account
 	Keys Combo		${combo}
 	Type String		ubuntu
 	Keys Combo		${combo}
-	Move Pointer To (520, 414)
+	Move Pointer To ${T}/next.png
 	Click LEFT Button
 
 Select Timezone
