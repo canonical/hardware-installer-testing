@@ -1,0 +1,7 @@
+{
+    "test": "erase-and-reinstall.robot",
+    "suite": "noble",
+    "templates": [
+        "generic"
+    ]
+}

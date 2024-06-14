@@ -50,8 +50,6 @@ Proprietary Software
 How do you want to install Ubuntu
 	[Documentation]		Erase disk etc vs manual
 	Match	${T}/how-to-install.png		10
-	Move Pointer To ${T}/next.png
-	Click LEFT Button
 
 Select Erase Disk and Reinstall
 	[Documentation]		Erase the entire disk and reinstall
