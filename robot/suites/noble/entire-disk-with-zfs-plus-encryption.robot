@@ -28,8 +28,8 @@ Default vs Extended
 Proprietary Software
     Proprietary Software
 
-Select Erase Disk and Reinstall
-    Select Erase Disk and Reinstall
+Entire Disk With ZFS Plus Encryption
+    Entire Disk With ZFS Plus Encryption
 
 Choose Where to Install Ubuntu
     Choose Where to Install Ubuntu

@@ -69,9 +69,68 @@ How do you want to install Ubuntu
 	Move Pointer To (0, 0)
 	BuiltIn.Sleep    10
 
+# TODO: GET SCREENSHOTS FOR THIS!
+Entire Disk
+    [Documentation] This slide assumes the disk is empty
+	Match	${T}/disk-setup.png		20
+	Match	${T}/entire-disk.png		20
+	Move Pointer To ${T}/next.png
+	Click LEFT Button
+	Move Pointer To (0, 0)
+	BuiltIn.Sleep    10
+
+Entire Disk With ZFS
+    [Documentation] This slide assumes the disk is empty
+	Match	${T}/disk-setup.png		20
+	Match	${T}/entire-disk.png		20
+	Move Pointer To ${T}/advanced-features.png
+	Click LEFT Button
+	Move Pointer To ${T}/erase-disk-use-zfs.png
+	Click LEFT Button
+	Move Pointer To ${T}/advanced-features-ok.png
+	Click LEFT Button
+	Match	${T}/check-zfs-selected.png		20
+	Move Pointer To ${T}/next.png
+	Click LEFT Button
+	Move Pointer To (0, 0)
+	BuiltIn.Sleep    10
+
+Entire Disk With ZFS Plus Encryption
+    [Documentation] This slide assumes the disk is empty
+	Match	${T}/disk-setup.png		20
+	Match	${T}/entire-disk.png		20
+	Move Pointer To ${T}/advanced-features.png
+	Click LEFT Button
+	Move Pointer To ${T}/erase-disk-use-zfs-plus-encryption.png
+	Click LEFT Button
+	Move Pointer To ${T}/advanced-features-ok.png
+	Click LEFT Button
+	Match	${T}/check-zfs-plus-encryption-selected.png		20
+	Move Pointer To ${T}/next.png
+	Click LEFT Button
+	Move Pointer To (0, 0)
+	BuiltIn.Sleep    10
+
+Entire Disk With LVM Plus Encryption
+    [Documentation] This slide assumes the disk is empty
+	Match	${T}/disk-setup.png		20
+	Match	${T}/entire-disk.png		20
+	Move Pointer To ${T}/advanced-features.png
+	Click LEFT Button
+	Move Pointer To ${T}/erase-disk-use-lvm-plus-encryption.png
+	Click LEFT Button
+	Move Pointer To ${T}/advanced-features-ok.png
+	Click LEFT Button
+	Match	${T}/check-lvm-plus-encryption-selected.png		20
+	Move Pointer To ${T}/next.png
+	Click LEFT Button
+	Move Pointer To (0, 0)
+	BuiltIn.Sleep    10
+
 Select Erase Disk and Reinstall
 	[Documentation]		Erase the entire disk and reinstall
-	Move Pointer To		${T}/erase-disk-install-ubuntu.jpeg
+	Match	${T}/disk-setup.png		20
+	Move Pointer To ${T}/erase-disk-install-ubuntu.png
 	Click LEFT Button
 	Move Pointer To ${T}/next.png
 	Click LEFT Button
@@ -80,7 +139,7 @@ Select Erase Disk and Reinstall
 
 Choose Where to Install Ubuntu
 	[Documentation]		Choose the drive to install on - correct one pre-selected
-	Match	${T}/choose-where-to-install.jpeg
+	Match	${T}/choose-where-to-install.png    20
 	Move Pointer To ${T}/next.png
 	Click LEFT Button
 	Move Pointer To (0, 0)
@@ -104,17 +163,22 @@ Create Account
 	Move Pointer To ${T}/next.png
 	Click LEFT Button
 	Move Pointer To (0, 0)
+	BuiltIn.Sleep    10
 
 Select Timezone
 	[Documentation]		Select timezone slide
 	Match	${T}/select-timezone.png		20
+	Move Pointer To ${T}/london.png
+	Click LEFT Button
 	Move Pointer To ${T}/next.png
 	Click LEFT Button
 	Move Pointer To (0, 0)
+	BuiltIn.Sleep    10
 
 Review Installation
 	[Documentation]		Review installation slide
 	Match	${T}/review-installation.png		20
+	BuiltIn.Sleep    10
 	Move Pointer To ${T}/install-button.png
 	Click LEFT Button
 
