@@ -1,5 +1,5 @@
 {
-    "test": "entire-disk.robot",
+    "test": "entire-disk-with-zfs.robot",
     "suite": "noble",
     "templates": [
         "generic"

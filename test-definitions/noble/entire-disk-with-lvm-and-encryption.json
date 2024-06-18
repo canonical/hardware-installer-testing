@@ -1,5 +1,5 @@
 {
-    "test": "entire-disk.robot",
+    "test": "entire-disk-with-lvm-and-encryption.robot",
     "suite": "noble",
     "templates": [
         "generic"

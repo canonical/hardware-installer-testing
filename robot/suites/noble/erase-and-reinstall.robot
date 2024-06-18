@@ -1,6 +1,6 @@
 *** Settings ***
 Resource    ${KVM_RESOURCES}
-Resource    ${INSTALLER_RESOURCES}
+Resource    ${CURDIR}/installer.resource
 
 *** Variables ***
 ${T}    ${CURDIR}

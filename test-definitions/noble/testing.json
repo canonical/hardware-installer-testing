@@ -1,5 +1,5 @@
 {
-    "test": "entire-disk.robot",
+    "test": "testing.robot",
     "suite": "noble",
     "templates": [
         "generic"

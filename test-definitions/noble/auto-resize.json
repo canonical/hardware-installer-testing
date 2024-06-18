@@ -1,5 +1,5 @@
 {
-    "test": "entire-disk.robot",
+    "test": "auto-resize.robot",
     "suite": "noble",
     "templates": [
         "generic"

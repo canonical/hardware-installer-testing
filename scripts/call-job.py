@@ -6,7 +6,7 @@ import pathlib
 
 
 ROOT_DIR = pathlib.Path(os.path.dirname(os.path.realpath(__file__)) + "/..")
-RESOURCES = ROOT_DIR / "robot" / "resources" / "installer.resource"
+INSTALLER_RESOURCE = ROOT_DIR / "robot" / "resources" / "installer.resource"
 
 
 def parse_args():
@@ -25,7 +25,7 @@ def load_config(config_filepath):
 
 
 def load_robot_file(job_config: dict):
-    return (ROOT_DIR / "robot" / "suites" / job_config["suite"] / job_config["test"]).read_text()
+    return (ROOT_DIR / "robot" / "suites" / job_config["suite"] / job_config["test"]).read_bytes()
 
 
 def load_list_of_templates(job_config: dict):
@@ -41,7 +41,8 @@ def zapper_connect(zapper_ip):
         zapper_ip,
         60000,
         config={
-            "allow_public_attrs": True
+            "allow_public_attrs": True,
+            "sync_request_timeout": 600,
         },
     )
 
@@ -57,10 +58,11 @@ def main():
         "KVM_RESOURCES": "snippets/common/common_kvm.resource",
     }
     for template in templates:
-        assets[template] = template.read_bytes()
+        assets[os.path.basename(str(template))] = template.read_bytes()
+    assets["installer.resource"] = INSTALLER_RESOURCE.read_bytes()
     status, html = connection.root.robot_run(robot_file, assets, variables)
     print(status)
-    output_html = pathlib.Path("/tmp/zapper-install-test.html", "w")
+    output_html = pathlib.Path("/tmp/zapper-install-test.html")
     output_html.write_text(html)
 
 

@@ -1,5 +1,5 @@
 {
-    "test": "entire-disk.robot",
+    "test": "manual-partitioning-reusing-home-partition.robot",
     "suite": "noble",
     "templates": [
         "generic"

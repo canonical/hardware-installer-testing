@@ -1,5 +1,5 @@
 {
-    "test": "entire-disk.robot",
+    "test": "erase-and-reinstall.robot",
     "suite": "noble",
     "templates": [
         "generic"

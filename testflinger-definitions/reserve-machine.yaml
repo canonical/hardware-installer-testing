@@ -2,5 +2,4 @@ job_queue: 202101-28611
 reserve_data:
   ssh_keys:
     - lp:andersson123
-    # ^^^ to be changed
   timeout: 3600

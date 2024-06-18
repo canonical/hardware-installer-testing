@@ -1,54 +1,73 @@
 *** Settings ***
 Documentation       Shared resources for installer testing
 
+*** Variables ***
+${T}    ${CURDIR}
+
 *** Keywords ***
 Select Language
-	[Documentation]		Select Language, we will default to English - REVERT MOVE POINTER TO AFTER PR MERGED
-	Match	${T}/language.png	120
+	[Documentation]		Select Language, we will default to English
+	Match	${T}/language.png	20
 	Move Pointer To ${T}/next.png
 	Click LEFT Button
+	Move Pointer To (0, 0)
+	BuiltIn.Sleep    10
 
 A11y Slide
 	[Documentation]		Accessibility Slide
-	Match	${T}/a11y.png	10
+	Match	${T}/a11y.png	20
 	Move Pointer To ${T}/next.png
 	Click LEFT Button
+	Move Pointer To (0, 0)
+	BuiltIn.Sleep    10
 
 Keyboard Layout
 	[Documentation]		Keyboard Layout Slide
-	Match	${T}/keyboard-layout.png	10
+	Match	${T}/keyboard-layout.png	20
 	Move Pointer To ${T}/next.png
 	Click LEFT Button
+	Move Pointer To (0, 0)
+	BuiltIn.Sleep    10
 
 Internet Connection
 	[Documentation]		Connect to the Internet Slide
-	Match	${T}/internet-connection.png	10
-	Move Pointer To (520, 414)
+	Match	${T}/internet-connection.png	20
+	Move Pointer To ${T}/next.png
 	Click LEFT Button
+	Move Pointer To (0, 0)
+	BuiltIn.Sleep    10
 
 Interactive vs Automated
 	[Documentation]		Interactive vs automated installation slide
-	Match	${T}/interactive-vs-automated.png		10
+	Match	${T}/interactive-vs-automated.png		20
 	Move Pointer To ${T}/next.png
 	Click LEFT Button
+	Move Pointer To (0, 0)
+	BuiltIn.Sleep    10
 
 Default vs Extended
 	[Documentation]		Default vs extended installation slide
-	Match	${T}/default-vs-extended.png		10
-	Move Pointer To (520, 414)
+	Match	${T}/default-vs-extended.png		20
+	Move Pointer To ${T}/next.png
 	Click LEFT Button
+	Move Pointer To (0, 0)
+	BuiltIn.Sleep    10
 
 Proprietary Software
 	[Documentation]		CLICKING NEXT AFTER THIS SLIDE EXITS THE INSTALLER?! Slide prompting proprietary software installation
-	Match	${T}/proprietary-software.png		10
+	Match	${T}/proprietary-software.png		20
 	Move Pointer To ${T}/next.png
 	Click LEFT Button
+	Move Pointer To (0, 0)
+	BuiltIn.Sleep    10
 
 How do you want to install Ubuntu
 	[Documentation]		Erase disk etc vs manual
-	Match	${T}/how-to-install.png		10
+	Match	${T}/disk-setup.png		20
 	Move Pointer To ${T}/next.png
 	Click LEFT Button
+	Move Pointer To (0, 0)
+	BuiltIn.Sleep    10
 
 Select Erase Disk and Reinstall
 	[Documentation]		Erase the entire disk and reinstall
@@ -56,16 +75,20 @@ Select Erase Disk and Reinstall
 	Click LEFT Button
 	Move Pointer To ${T}/next.png
 	Click LEFT Button
+	Move Pointer To (0, 0)
+	BuiltIn.Sleep    10
 
 Choose Where to Install Ubuntu
 	[Documentation]		Choose the drive to install on - correct one pre-selected
 	Match	${T}/choose-where-to-install.jpeg
 	Move Pointer To ${T}/next.png
 	Click LEFT Button
+	Move Pointer To (0, 0)
+	BuiltIn.Sleep    10
 
 Create Account
 	[Documentation]		Create the user account - SHOULD WORK AFTER PR!
-	Match	${T}/create-your-account.png		10
+	Match	${T}/create-your-account.png		20
 	${combo}	Create List		TAB
 	Type String		ubuntu
 	Keys Combo		${combo}
@@ -80,16 +103,18 @@ Create Account
 	Keys Combo		${combo}
 	Move Pointer To ${T}/next.png
 	Click LEFT Button
+	Move Pointer To (0, 0)
 
 Select Timezone
 	[Documentation]		Select timezone slide
-	Match	${T}/select-timezone.png		10
-	Move Pointer To (520, 414)
+	Match	${T}/select-timezone.png		20
+	Move Pointer To ${T}/next.png
 	Click LEFT Button
+	Move Pointer To (0, 0)
 
 Review Installation
 	[Documentation]		Review installation slide
-	Match	${T}/review-installation.png		10
+	Match	${T}/review-installation.png		20
 	Move Pointer To ${T}/install-button.png
 	Click LEFT Button
 
