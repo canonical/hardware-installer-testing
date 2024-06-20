@@ -1,0 +1,9 @@
+
+{
+    "test": "flash-usb.robot",
+    "suite": "noble",
+    "templates": [],
+    "resources": [
+        "usb_disk.resource"
+    ]
+}

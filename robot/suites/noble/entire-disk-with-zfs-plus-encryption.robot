@@ -6,7 +6,6 @@ Resource    ${CURDIR}/installer.resource
 ${T}    ${CURDIR}
 
 *** Test Cases ***
-# Installer just sometimes randomly exits
 Language Slide
     Select Language
 

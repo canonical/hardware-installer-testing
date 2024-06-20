@@ -3,5 +3,8 @@
     "suite": "noble",
     "templates": [
         "generic"
+    ],
+    "resources": [
+        "installer.resource"
     ]
 }

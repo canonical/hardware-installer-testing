@@ -3,18 +3,35 @@ import argparse
 import json
 import rpyc
 import pathlib
+import time
+import tempfile
+import subprocess
+import requests
+# import sys
+
+# This needs detailed logging now that it's getting more complicated
 
 
 ROOT_DIR = pathlib.Path(os.path.dirname(os.path.realpath(__file__)) + "/..")
-INSTALLER_RESOURCE = ROOT_DIR / "robot" / "resources" / "installer.resource"
+# INSTALLER_RESOURCE = ROOT_DIR / "robot" / "resources" / "installer.resource"
+RESOURCE_DIR = ROOT_DIR / "robot" / "resources"
+# ugh, zapper machine id instead maybe?
+HOSTDATA_API = "https://certification.canonical.com/api/v2/hostdata/"
+MACHINE_API = "https://certification.canonical.com/api/v2/machines/"
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Script to run a robot framework job")
     parser.add_argument("--job-config", type=str, required=True,
                         help="json config file for installer job definition")
-    parser.add_argument("--zapper-ip", type=str, required=True,
-                        help="IP of zapper machine to run the test on")
+    # parser.add_argument("--zapper-ip", type=str, required=True,
+    #                     help="IP of zapper machine to run the test on")
+    # parser.add_argument("--testflinger-config", type=str, required=True,
+    #                     help="path to testflinger yaml file to reserve machine")
+    # parser.add_argument("--job-queue", type=str, required=True,
+    #                     help="numeric ID for the job queue")
+    parser.add_argument("--zapper-id", type=str, required=True,
+                        help="Machine id of the zapper machine")
     return parser.parse_args()
 
 
@@ -36,7 +53,23 @@ def load_list_of_templates(job_config: dict):
     return templates
 
 
-def zapper_connect(zapper_ip):
+def load_local_resources(job_config: dict):
+    resources = []
+    for resource in job_config["resources"]:
+        resources.append(RESOURCE_DIR / resource)
+    return resources
+
+
+def gather_test_assets(templates: list, resources: list):
+    assets = {}
+    for template in templates:
+        assets[os.path.basename(str(template))] = template.read_bytes()
+    for resource in resources:
+        assets[os.path.basename(str(resource))] = resource.read_bytes()
+    return assets
+
+
+def zapper_connect(zapper_ip: str):
     return rpyc.connect(
         zapper_ip,
         60000,
@@ -47,19 +80,140 @@ def zapper_connect(zapper_ip):
     )
 
 
+def flash_usb(job_config: dict, variables: dict, connection: rpyc.Connection):
+    robot_file = """*** Settings ***
+Resource    ${USB_RESOURCES}
+
+*** Variables ***
+${T}    ${CURDIR}
+
+*** Test Cases ***
+Flash Noble USB
+    [Documentation] Flashes the USB with the Noble ISO
+    Download and Provision via USB    """
+    robot_file += job_config["iso-url"] + "\n"
+    robot_file_bytes = str.encode(robot_file)
+    status, html = connection.root.robot_run(robot_file_bytes, {}, variables)
+    return status, html
+
+
+def reserve_machine(queue: str):
+    testflinger_config = f"""job_queue: {queue}
+reserve_data:
+  ssh_keys:
+    - lp:andersson123
+  timeout: 3600
+"""  # Change the ssh keys later on ovvi
+    testflinger_file = tempfile.NamedTemporaryFile()
+    pathlib.Path(testflinger_file.name).write_text(testflinger_config)
+    try:
+        print("Submitting testflinger job to reserve machine")
+        subprocess.run(
+            [
+                "testflinger",
+                "submit",
+                testflinger_file.name,
+            ],
+            check=True
+        )
+        print("Submitting testflinger job succeeded")
+        testflinger_file.close()
+        return True
+    except subprocess.CalledProcessError as _:
+        print("Submitting testflinger job failed")
+        return False
+
+
+def get_machine_ip(machine_id: str):
+    api_url = f"{HOSTDATA_API}/{machine_id}/"
+    hostdata_json = json.loads(requests.get(api_url).content)
+    return hostdata_json["ip_address"]
+
+
+def get_dut_machine_id(zapper_id: str):
+    api_url = f"{MACHINE_API}/{zapper_id}/"
+    machine_json = json.loads(requests.get(api_url).content)
+    return machine_json["parent_canonical_id"]
+
+
+def check_ssh_connectivity(machine_ip: str):
+    print(f"Checking connectivity to {machine_ip}")
+    ssh_command = f"ssh ubuntu@{machine_ip} :"
+    start = time.time()
+    timeout = 60
+    while (time.time() - start) < timeout:
+        try:
+            subprocess.run(
+                ssh_command.split(" "),
+                check=True,
+            )
+            return True
+        except subprocess.CalledProcessError as _:
+            print("ssh check failed")
+    return False
+
+
+def reboot_dut(dut_ip: str):
+    reboot_cmd = f"ssh ubuntu@{dut_ip} reboot"
+    subprocess.run(
+        reboot_cmd.split(" "),
+        check=True,
+    )
+
+
+def gather_boot_templates():
+    templates = []
+    templates_dir = (ROOT_DIR / "robot" / "templates" / "boot").glob("*")
+    templates = [x.absolute() for x in templates_dir if x.is_file()]
+    return templates
+
+
+def run_boot_process(connection: rpyc.Connection, variables: dict):
+    assets = gather_boot_templates()
+    robot_boot_file =  (ROOT_DIR / "robot" / "suites" / "boot" / "boot-into-usb.robot").read_bytes()
+    status, html = connection.root.robot_run(
+        robot_boot_file, assets, variables
+    )
+    return status
+
+
 def main():
     args = parse_args()
     job_config = load_config(args.job_config)
     robot_file = load_robot_file(job_config)
     templates = load_list_of_templates(job_config)
-    connection = zapper_connect(args.zapper_ip)
-    assets = {}
+    local_resources = load_local_resources(job_config)
+    # Collect variables and assets
     variables = {
         "KVM_RESOURCES": "snippets/common/common_kvm.resource",
+        "USB_RESOURCES": "resources/usb_disk.resource",
     }
-    for template in templates:
-        assets[os.path.basename(str(template))] = template.read_bytes()
-    assets["installer.resource"] = INSTALLER_RESOURCE.read_bytes()
+    assets = gather_test_assets(templates, local_resources)
+    # Set up zapper connection
+    connection = zapper_connect(zapper_ip)
+    ###################################################
+    # development stuff
+    # api calls
+    zapper_ip = get_machine_ip(args.zapper_ip)
+    dut_machine_id = get_dut_machine_id(args.zapper_id)
+    dut_ip = get_machine_ip(dut_machine_id)
+    # Reserve the machine
+    print(f"Reserving machine {dut_machine_id}")
+    if not reserve_machine(dut_machine_id):
+        print(f"Reserving machine {dut_machine_id} failed!")
+    print(f"Machine {dut_machine_id} reserved")
+    # Double check connectivity to machine
+    print(f"Machine {dut_machine_id} reserved, checking connectivity...")
+    if not check_ssh_connectivity(dut_ip):
+        print(f"ssh-ing to machine {dut_ip} failed!")
+    print(f"ssh-ing to machine {dut_ip} succeeded!")
+    # Flash the usb with the iso
+    print(f"Flashing zapper usb with iso...")
+    status, html = flash_usb(job_config, variables, connection)
+    # Reboot the DUT
+    reboot_dut(dut_ip)
+    # Run the robot job to boot into the installer
+    ###################################################
     status, html = connection.root.robot_run(robot_file, assets, variables)
     print(status)
     output_html = pathlib.Path("/tmp/zapper-install-test.html")

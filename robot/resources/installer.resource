@@ -69,7 +69,6 @@ How do you want to install Ubuntu
 	Move Pointer To (0, 0)
 	BuiltIn.Sleep    10
 
-# TODO: GET SCREENSHOTS FOR THIS!
 Entire Disk
     [Documentation] This slide assumes the disk is empty
 	Match	${T}/disk-setup.png		20
@@ -194,7 +193,7 @@ Wait For Install To Finish
 
 Wait For Reboot To Finish
 	[Documentation]		Login Prompt
-	Match	${T}/login-prompt.png		600
+	Match	${T}/login-prompt.png		1200
 	${combo}	Create List		RETURN
 	Keys Combo		${combo}
 	Type String		ubuntu
