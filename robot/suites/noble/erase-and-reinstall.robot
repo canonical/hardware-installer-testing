@@ -1,5 +1,6 @@
 *** Settings ***
 Resource    ${KVM_RESOURCES}
+Resource    ${USB_RESOURCES}
 Resource    ${CURDIR}/installer.resource
 
 *** Variables ***
@@ -17,6 +18,13 @@ Keyboard Layout
 
 Internet Connection
     Internet Connection
+
+# fails before here - update available for installer - need a test case for this
+Installer Update Available
+    Installer Update Available
+
+Try Or Install
+    Try Or Install
 
 Interactive vs Automated
     Interactive vs Automated

@@ -7,7 +7,7 @@ import time
 import tempfile
 import subprocess
 import requests
-# import sys
+import sys
 
 # This needs detailed logging now that it's getting more complicated
 
@@ -24,14 +24,14 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Script to run a robot framework job")
     parser.add_argument("--job-config", type=str, required=True,
                         help="json config file for installer job definition")
-    # parser.add_argument("--zapper-ip", type=str, required=True,
-    #                     help="IP of zapper machine to run the test on")
+    parser.add_argument("--zapper-ip", type=str, required=True,
+                        help="IP of zapper machine to run the test on")
     # parser.add_argument("--testflinger-config", type=str, required=True,
     #                     help="path to testflinger yaml file to reserve machine")
     # parser.add_argument("--job-queue", type=str, required=True,
     #                     help="numeric ID for the job queue")
-    parser.add_argument("--zapper-id", type=str, required=True,
-                        help="Machine id of the zapper machine")
+    # parser.add_argument("--zapper-id", type=str, required=True,
+    #                     help="Machine id of the zapper machine")
     return parser.parse_args()
 
 
@@ -75,7 +75,7 @@ def zapper_connect(zapper_ip: str):
         60000,
         config={
             "allow_public_attrs": True,
-            "sync_request_timeout": 600,
+            "sync_request_timeout": 2400,
         },
     )
 
@@ -127,6 +127,8 @@ reserve_data:
 def get_machine_ip(machine_id: str):
     api_url = f"{HOSTDATA_API}/{machine_id}/"
     hostdata_json = json.loads(requests.get(api_url).content)
+    print(hostdata_json.keys())
+    print(hostdata_json["detail"])
     return hostdata_json["ip_address"]
 
 
@@ -153,10 +155,9 @@ def check_ssh_connectivity(machine_ip: str):
     return False
 
 
-def reboot_dut(dut_ip: str):
-    reboot_cmd = f"ssh ubuntu@{dut_ip} reboot"
+def run_remote_command(machine_ip: str, command: str):
     subprocess.run(
-        reboot_cmd.split(" "),
+        f"ssh@{machine_ip} {command}".split(" "),
         check=True,
     )
 
@@ -189,30 +190,44 @@ def main():
         "USB_RESOURCES": "resources/usb_disk.resource",
     }
     assets = gather_test_assets(templates, local_resources)
-    # Set up zapper connection
+    zapper_ip = args.zapper_ip
     connection = zapper_connect(zapper_ip)
+    # Set up zapper connection
     ###################################################
     # development stuff
     # api calls
-    zapper_ip = get_machine_ip(args.zapper_ip)
-    dut_machine_id = get_dut_machine_id(args.zapper_id)
-    dut_ip = get_machine_ip(dut_machine_id)
+    # the api requires authentication. UGH. I mean of course but still
+    # zapper_ip = get_machine_ip(args.zapper_id)
+    # dut_machine_id = get_dut_machine_id(args.zapper_id)
+    # dut_ip = get_machine_ip(dut_machine_id)
+    # print(zapper_ip)
+    # print(dut_machine_id)
+    # print(dut_ip)
+    # sys.exit(0)
     # Reserve the machine
-    print(f"Reserving machine {dut_machine_id}")
-    if not reserve_machine(dut_machine_id):
-        print(f"Reserving machine {dut_machine_id} failed!")
-    print(f"Machine {dut_machine_id} reserved")
-    # Double check connectivity to machine
-    print(f"Machine {dut_machine_id} reserved, checking connectivity...")
-    if not check_ssh_connectivity(dut_ip):
-        print(f"ssh-ing to machine {dut_ip} failed!")
-    print(f"ssh-ing to machine {dut_ip} succeeded!")
+    # print(f"Reserving machine {dut_machine_id}")
+    # if not reserve_machine(dut_machine_id):
+    #     print(f"Reserving machine {dut_machine_id} failed!")
+    # print(f"Machine {dut_machine_id} reserved")
+    # # Double check connectivity to machine
+    # print(f"Machine {dut_machine_id} reserved, checking connectivity...")
+    # if not check_ssh_connectivity(dut_ip):
+    #     print(f"ssh-ing to machine {dut_ip} failed!")
+    # print(f"ssh-ing to machine {dut_ip} succeeded!")
+    # print(f"Checking connectivity to zapper {zapper_ip}")
+    # if not check_ssh_connectivity(zapper_ip):
+    #     print(f"ssh-ing to machine {zapper_ip} failed!")
+    # print(f"ssh-ing to machine {zapper_ip} succeeded!")
+    # Double check that the usb is connected
+    # print("enabling usb on zapper machine")
+    # run_remote_command(zapper_ip, "zapper typecmux set DUT")
     # Flash the usb with the iso
-    print(f"Flashing zapper usb with iso...")
-    status, html = flash_usb(job_config, variables, connection)
+    # print(f"Flashing zapper usb with iso...")
+    # status, html = flash_usb(job_config, variables, connection)
     # Reboot the DUT
-    reboot_dut(dut_ip)
+    # run_remote_command(dut_ip, "reboot")
     # Run the robot job to boot into the installer
+    # run_boot_process(connection, variables)
     ###################################################
     status, html = connection.root.robot_run(robot_file, assets, variables)
     print(status)

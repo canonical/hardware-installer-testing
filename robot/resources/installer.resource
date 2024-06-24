@@ -150,15 +150,21 @@ Create Account
 	${combo}	Create List		TAB
 	Type String		ubuntu
 	Keys Combo		${combo}
+	BuiltIn.Sleep    2
 	Type String		ubuntu
 	Keys Combo		${combo}
+	BuiltIn.Sleep    2
 	Type String		ubuntu
 	Keys Combo		${combo}
+	BuiltIn.Sleep    2
 	Type String		ubuntu
 	Keys Combo		${combo}
+	BuiltIn.Sleep    2
 	Keys Combo		${combo}
+	BuiltIn.Sleep    2
 	Type String		ubuntu
 	Keys Combo		${combo}
+	BuiltIn.Sleep    2
 	Move Pointer To ${T}/next.png
 	Click LEFT Button
 	Move Pointer To (0, 0)
@@ -183,10 +189,10 @@ Review Installation
 
 Wait For Install To Finish
 	[Documentation]		Install finished slide
-	Match	${T}/install-complete.png		600
+	Match	${T}/install-complete.png		1200
 	Move Pointer To ${T}/restart-button.png
 	Click LEFT Button
-	Match	${T}/remove-medium.png		600
+	Match	${T}/remove-medium.png		1200
 	Unplug USB
 	${combo}	Create List		RETURN
 	Keys Combo		${combo}
@@ -203,3 +209,18 @@ Wait For Reboot To Finish
 	Keys Combo		${combo}
 	Match	${T}/noble-desktop.png		15
 
+Installer Update Available
+	[Documentation]		Installer update available slide
+	Match	${T}/installer-update-available.png		20
+	Move Pointer To ${T}/skip.png
+	Click LEFT Button
+	Move Pointer To (0, 0)
+	BuiltIn.Sleep    10
+
+Try Or Install
+	[Documentation]		Choose try or install
+	Match	${T}/try-or-install.png
+	Move Pointer To ${T}/next.png
+	Click LEFT Button
+	Move Pointer To (0, 0)
+	BuiltIn.Sleep    10
