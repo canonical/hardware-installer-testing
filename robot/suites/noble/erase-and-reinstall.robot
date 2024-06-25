@@ -23,8 +23,8 @@ Internet Connection
 Installer Update Available
     Installer Update Available
 
-Try Or Install
-    Try Or Install
+#Try Or Install
+#    Try Or Install
 
 Interactive vs Automated
     Interactive vs Automated

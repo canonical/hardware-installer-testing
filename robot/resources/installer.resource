@@ -194,18 +194,18 @@ Wait For Install To Finish
 	Click LEFT Button
 	Match	${T}/remove-medium.png		1200
 	Unplug USB
-	${combo}	Create List		RETURN
+	${combo}	Create List		ENTER
 	Keys Combo		${combo}
 
 Wait For Reboot To Finish
 	[Documentation]		Login Prompt
 	Match	${T}/login-prompt.png		1200
-	${combo}	Create List		RETURN
+	${combo}	Create List		ENTER
 	Keys Combo		${combo}
 	Type String		ubuntu
 	Keys Combo		${combo}
 	Type String		ubuntu
-	${combo}	Create List		RETURN
+	${combo}	Create List		ENTER
 	Keys Combo		${combo}
 	Match	${T}/noble-desktop.png		15
 
