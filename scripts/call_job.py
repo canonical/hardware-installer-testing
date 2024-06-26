@@ -6,13 +6,12 @@ import json
 import os
 import pathlib
 import subprocess
-import sys
+# import sys
 import tempfile
 import time
 
-import requests
+# import requests
 import rpyc
-
 
 ROOT_DIR = pathlib.Path(os.path.dirname(os.path.realpath(__file__)) + "/..")
 # INSTALLER_RESOURCE = ROOT_DIR / "robot" / "resources" / "installer.resource"
@@ -23,6 +22,9 @@ MACHINE_API = "https://certification.canonical.com/api/v2/machines/"
 
 
 def parse_args():
+    """
+    Parses the command line args for this script.
+    """
     parser = argparse.ArgumentParser(description="Script to run a robot framework job")
     parser.add_argument(
         "--job-config",
@@ -46,18 +48,21 @@ def parse_args():
 
 
 def load_config(config_filepath):
-    config_file = pathlib.Path(config_filepath).read_text()
+    """Loads the specified json config"""
+    config_file = pathlib.Path(config_filepath).read_text(encoding="utf-8")
     config_json = json.loads(config_file)
     return config_json
 
 
 def load_robot_file(job_config: dict):
+    """Loads the robot file specified in the job config"""
     return (
         ROOT_DIR / "robot" / "suites" / job_config["suite"] / job_config["test"]
     ).read_bytes()
 
 
 def load_list_of_templates(job_config: dict):
+    """Loads the list of templates as specified in the job config"""
     templates = []
     for template in job_config["templates"]:
         template_dir = (ROOT_DIR / "robot" / "templates" / template).glob("*")
@@ -66,6 +71,7 @@ def load_list_of_templates(job_config: dict):
 
 
 def load_local_resources(job_config: dict):
+    """Loads any Robot Framework 'resources' as specified in the job config"""
     resources = []
     for resource in job_config["resources"]:
         resources.append(RESOURCE_DIR / resource)
@@ -73,6 +79,10 @@ def load_local_resources(job_config: dict):
 
 
 def gather_test_assets(templates: list, resources: list):
+    """
+    Gathers all of the assets required to run the
+    test - this includes templates and resources
+    """
     assets = {}
     for template in templates:
         assets[os.path.basename(str(template))] = template.read_bytes()
@@ -82,6 +92,7 @@ def gather_test_assets(templates: list, resources: list):
 
 
 def zapper_connect(zapper_ip: str):
+    """Connects to the specified zapper board"""
     return rpyc.connect(
         zapper_ip,
         60000,
@@ -93,6 +104,7 @@ def zapper_connect(zapper_ip: str):
 
 
 def flash_usb(job_config: dict, variables: dict, connection: rpyc.Connection):
+    """Flashes the USB connected to the zapper board with a specified iso"""
     robot_file = """*** Settings ***
 Resource    ${USB_RESOURCES}
 
@@ -110,87 +122,90 @@ Flash Noble USB
 
 
 def reserve_machine(queue: str):
+    """Reserves the machine via testflinger"""
     testflinger_config = f"""job_queue: {queue}
 reserve_data:
   ssh_keys:
     - lp:andersson123
   timeout: 3600
 """  # Change the ssh keys later on ovvi
-    testflinger_file = tempfile.NamedTemporaryFile()
-    pathlib.Path(testflinger_file.name).write_text(testflinger_config)
-    try:
-        print("Submitting testflinger job to reserve machine")
-        subprocess.run(
-            [
-                "testflinger",
-                "submit",
-                testflinger_file.name,
-            ],
-            check=True,
+    with tempfile.NamedTemporaryFile() as testflinger_file:
+        pathlib.Path(testflinger_file.name).write_text(
+            testflinger_config, encoding="utf-8"
         )
-        print("Submitting testflinger job succeeded")
-        testflinger_file.close()
-        return True
-    except subprocess.CalledProcessError as _:
-        print("Submitting testflinger job failed")
-        return False
-
-
-def get_machine_ip(machine_id: str):
-    api_url = f"{HOSTDATA_API}/{machine_id}/"
-    hostdata_json = json.loads(requests.get(api_url).content)
-    print(hostdata_json.keys())
-    print(hostdata_json["detail"])
-    return hostdata_json["ip_address"]
-
-
-def get_dut_machine_id(zapper_id: str):
-    api_url = f"{MACHINE_API}/{zapper_id}/"
-    machine_json = json.loads(requests.get(api_url).content)
-    return machine_json["parent_canonical_id"]
-
-
-def check_ssh_connectivity(machine_ip: str):
-    print(f"Checking connectivity to {machine_ip}")
-    ssh_command = f"ssh ubuntu@{machine_ip} :"
-    start = time.time()
-    timeout = 60
-    while (time.time() - start) < timeout:
         try:
+            print("Submitting testflinger job to reserve machine")
             subprocess.run(
-                ssh_command.split(" "),
+                [
+                    "testflinger",
+                    "submit",
+                    testflinger_file.name,
+                ],
                 check=True,
             )
+            print("Submitting testflinger job succeeded")
             return True
         except subprocess.CalledProcessError as _:
-            print("ssh check failed")
-    return False
+            print("Submitting testflinger job failed")
+            return False
 
 
-def run_remote_command(machine_ip: str, command: str):
-    subprocess.run(
-        f"ssh@{machine_ip} {command}".split(" "),
-        check=True,
-    )
+# def get_machine_ip(machine_id: str):
+#     api_url = f"{HOSTDATA_API}/{machine_id}/"
+#     hostdata_json = json.loads(requests.get(api_url).content)
+#     print(hostdata_json.keys())
+#     print(hostdata_json["detail"])
+#     return hostdata_json["ip_address"]
 
 
-def gather_boot_templates():
-    templates = []
-    templates_dir = (ROOT_DIR / "robot" / "templates" / "boot").glob("*")
-    templates = [x.absolute() for x in templates_dir if x.is_file()]
-    return templates
+# def get_dut_machine_id(zapper_id: str):
+#     api_url = f"{MACHINE_API}/{zapper_id}/"
+#     machine_json = json.loads(requests.get(api_url).content)
+#     return machine_json["parent_canonical_id"]
 
 
-def run_boot_process(connection: rpyc.Connection, variables: dict):
-    assets = gather_boot_templates()
-    robot_boot_file = (
-        ROOT_DIR / "robot" / "suites" / "boot" / "boot-into-usb.robot"
-    ).read_bytes()
-    status, html = connection.root.robot_run(robot_boot_file, assets, variables)
-    return status
+# def check_ssh_connectivity(machine_ip: str):
+#     print(f"Checking connectivity to {machine_ip}")
+#     ssh_command = f"ssh ubuntu@{machine_ip} :"
+#     start = time.time()
+#     timeout = 60
+#     while (time.time() - start) < timeout:
+#         try:
+#             subprocess.run(
+#                 ssh_command.split(" "),
+#                 check=True,
+#             )
+#             return True
+#         except subprocess.CalledProcessError as _:
+#             print("ssh check failed")
+#     return False
+
+
+# def run_remote_command(machine_ip: str, command: str):
+#     subprocess.run(
+#         f"ssh@{machine_ip} {command}".split(" "),
+#         check=True,
+#     )
+
+
+# def gather_boot_templates():
+#     templates = []
+#     templates_dir = (ROOT_DIR / "robot" / "templates" / "boot").glob("*")
+#     templates = [x.absolute() for x in templates_dir if x.is_file()]
+#     return templates
+
+
+# def run_boot_process(connection: rpyc.Connection, variables: dict):
+#     assets = gather_boot_templates()
+#     robot_boot_file = (
+#         ROOT_DIR / "robot" / "suites" / "boot" / "boot-into-usb.robot"
+#     ).read_bytes()
+#     status, html = connection.root.robot_run(robot_boot_file, assets, variables)
+#     return status
 
 
 def main():
+    """Main function which runs the test specified in the job config"""
     args = parse_args()
     job_config = load_config(args.job_config)
     robot_file = load_robot_file(job_config)
@@ -245,7 +260,7 @@ def main():
     print(status)
     print("installer job finished")
     output_html = pathlib.Path("/tmp/zapper-install-test.html")
-    output_html.write_text(html)
+    output_html.write_text(html, encoding="utf-8")
     time.sleep(15)
     post_boot_robot_file = (
         ROOT_DIR / "robot" / "suites" / job_config["suite"] / "post-boot.robot"
@@ -254,7 +269,7 @@ def main():
     print("post boot job finished")
     print(status)
     output_html = pathlib.Path("/tmp/zapper-install-test-post-boot.html")
-    output_html.write_text(html)
+    output_html.write_text(html, encoding="utf-8")
 
 
 if __name__ == "__main__":
