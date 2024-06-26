@@ -10,5 +10,6 @@ jobs:
         uses: actions/checkout@v2
       - name: pre-commit
         run: |
-          sudo apt install -y pre-commit git pylint
+          sudo apt install -y pre-commit git pylint python3-pip
+          pip3 install rpyc
           pre-commit run --all-files
