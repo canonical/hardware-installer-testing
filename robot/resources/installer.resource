@@ -199,15 +199,16 @@ Wait For Install To Finish
 
 Wait For Reboot To Finish
 	[Documentation]		Login Prompt
-	Match	${T}/login-prompt.png		1200
+	Match	${T}/login-prompt.png		600
+	Move Pointer To ${T}/login-prompt.png
+	Click LEFT Button
 	${combo}	Create List		ENTER
-	Keys Combo		${combo}
 	Type String		ubuntu
 	Keys Combo		${combo}
 	Type String		ubuntu
 	${combo}	Create List		ENTER
 	Keys Combo		${combo}
-	Match	${T}/noble-desktop.png		15
+	Match	${T}/noble-desktop.png		60
 
 Installer Update Available
 	[Documentation]		Installer update available slide
