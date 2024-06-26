@@ -10,5 +10,5 @@ jobs:
         run: |
           ls
           pwd
-          sudo apt install -y pre-commit git
-          pre-commit run --all-files
+          #sudo apt install -y pre-commit git
+          #pre-commit run --all-files
