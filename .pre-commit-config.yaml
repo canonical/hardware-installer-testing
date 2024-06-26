@@ -1,0 +1,42 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: pretty-format-json
+        args:
+          - "--autofix"
+          - "--indent=4"
+  - repo: https://github.com/ambv/black
+    rev: 23.3.0
+    hooks:
+      - id: black
+  - repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+  - repo: local
+    hooks:
+      # Run pylint with --disable import-error.
+      # This is meant to run on developers' machines where not all the
+      # Python modules may be installed.
+      - id: pylint
+        name: pylint
+        stages:
+          [commit-msg, post-checkout, post-commit, post-merge, post-rewrite,
+           commit, merge-commit, push, prepare-commit-msg]
+        entry: pylint
+        args:
+          - "--disable=import-error"
+        language: system
+        types: [python]
+      # Run pylint without disabling import-error.
+      # This is meant to run in CI (pre-commit run --hook-stage manual).
+      # The CI environment is expected to have all the required dependencies.
+      - id: pylint
+        name: pylint (with import errors)
+        stages: [manual]
+        entry: pylint
+        language: system
+        types: [python]
