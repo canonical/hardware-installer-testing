@@ -10,5 +10,5 @@ jobs:
         uses: actions/checkout@v2
       - name: pre-commit
         run: |
-          sudo apt install -y pre-commit git
+          sudo apt install -y pre-commit git pylint
           pre-commit run --all-files
