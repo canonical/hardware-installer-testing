@@ -1,3 +1,6 @@
+"""
+Calls a robot framework job from robot/suites and runs it on a zapper board hooked up to a DUT
+"""
 import argparse
 import json
 import os
@@ -9,8 +12,6 @@ import time
 
 import requests
 import rpyc
-
-# This needs detailed logging now that it's getting more complicated
 
 
 ROOT_DIR = pathlib.Path(os.path.dirname(os.path.realpath(__file__)) + "/..")
@@ -246,7 +247,9 @@ def main():
     output_html = pathlib.Path("/tmp/zapper-install-test.html")
     output_html.write_text(html)
     time.sleep(15)
-    post_boot_robot_file = (ROOT_DIR / "robot" / "suites" / job_config["suite"] / "post-boot.robot").read_bytes()
+    post_boot_robot_file = (
+        ROOT_DIR / "robot" / "suites" / job_config["suite"] / "post-boot.robot"
+    ).read_bytes()
     status, html = connection.root.robot_run(post_boot_robot_file, assets, variables)
     print("post boot job finished")
     print(status)
