@@ -8,5 +8,5 @@ jobs:
     steps:
       - name: pre-commit
         run: |
-          apt install -y pre-commit
+          sudo apt install -y pre-commit
           pre-commit run --all-files
