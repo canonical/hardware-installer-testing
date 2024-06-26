@@ -1,13 +1,14 @@
-import os
 import argparse
 import json
-import rpyc
+import os
 import pathlib
-import time
-import tempfile
 import subprocess
-import requests
 import sys
+import tempfile
+import time
+
+import requests
+import rpyc
 
 # This needs detailed logging now that it's getting more complicated
 
@@ -22,10 +23,18 @@ MACHINE_API = "https://certification.canonical.com/api/v2/machines/"
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Script to run a robot framework job")
-    parser.add_argument("--job-config", type=str, required=True,
-                        help="json config file for installer job definition")
-    parser.add_argument("--zapper-ip", type=str, required=True,
-                        help="IP of zapper machine to run the test on")
+    parser.add_argument(
+        "--job-config",
+        type=str,
+        required=True,
+        help="json config file for installer job definition",
+    )
+    parser.add_argument(
+        "--zapper-ip",
+        type=str,
+        required=True,
+        help="IP of zapper machine to run the test on",
+    )
     # parser.add_argument("--testflinger-config", type=str, required=True,
     #                     help="path to testflinger yaml file to reserve machine")
     # parser.add_argument("--job-queue", type=str, required=True,
@@ -42,7 +51,9 @@ def load_config(config_filepath):
 
 
 def load_robot_file(job_config: dict):
-    return (ROOT_DIR / "robot" / "suites" / job_config["suite"] / job_config["test"]).read_bytes()
+    return (
+        ROOT_DIR / "robot" / "suites" / job_config["suite"] / job_config["test"]
+    ).read_bytes()
 
 
 def load_list_of_templates(job_config: dict):
@@ -114,7 +125,7 @@ reserve_data:
                 "submit",
                 testflinger_file.name,
             ],
-            check=True
+            check=True,
         )
         print("Submitting testflinger job succeeded")
         testflinger_file.close()
@@ -171,10 +182,10 @@ def gather_boot_templates():
 
 def run_boot_process(connection: rpyc.Connection, variables: dict):
     assets = gather_boot_templates()
-    robot_boot_file =  (ROOT_DIR / "robot" / "suites" / "boot" / "boot-into-usb.robot").read_bytes()
-    status, html = connection.root.robot_run(
-        robot_boot_file, assets, variables
-    )
+    robot_boot_file = (
+        ROOT_DIR / "robot" / "suites" / "boot" / "boot-into-usb.robot"
+    ).read_bytes()
+    status, html = connection.root.robot_run(robot_boot_file, assets, variables)
     return status
 
 

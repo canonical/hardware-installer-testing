@@ -1,10 +1,10 @@
 {
-    "test": "manual-partitioning.robot",
+    "resources": [
+        "installer.resource"
+    ],
     "suite": "noble",
     "templates": [
         "generic"
     ],
-    "resources": [
-        "installer.resource"
-    ]
+    "test": "manual-partitioning.robot"
 }

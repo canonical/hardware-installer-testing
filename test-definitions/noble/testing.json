@@ -1,10 +1,10 @@
 {
-    "test": "testing.robot",
+    "resources": [
+        "installer.resource"
+    ],
     "suite": "noble",
     "templates": [
         "generic"
     ],
-    "resources": [
-        "installer.resource"
-    ]
+    "test": "testing.robot"
 }

@@ -1,10 +1,10 @@
 {
-    "test": "auto-resize.robot",
+    "resources": [
+        "installer.resource"
+    ],
     "suite": "noble",
     "templates": [
         "generic"
     ],
-    "resources": [
-        "installer.resource"
-    ]
+    "test": "auto-resize.robot"
 }

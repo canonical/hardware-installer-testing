@@ -1,7 +1,6 @@
-
 {
-    "test": "flash-usb.robot",
+    "resources": [],
     "suite": "noble",
     "templates": [],
-    "resources": []
+    "test": "flash-usb.robot"
 }

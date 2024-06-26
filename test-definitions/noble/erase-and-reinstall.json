@@ -1,10 +1,10 @@
 {
-    "test": "erase-and-reinstall.robot",
+    "resources": [
+        "installer.resource"
+    ],
     "suite": "noble",
     "templates": [
         "generic"
     ],
-    "resources": [
-        "installer.resource"
-    ]
+    "test": "erase-and-reinstall.robot"
 }
