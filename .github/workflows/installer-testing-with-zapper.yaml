@@ -1,0 +1,12 @@
+# yamllint disable-file
+---
+name: Installer Testing With Zapper CI
+on: push
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: pre-commit
+        run: |
+          apt install -y pre-commit
+          pre-commit run --all-files
