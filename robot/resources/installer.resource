@@ -225,3 +225,7 @@ Try Or Install
 	Click LEFT Button
 	Move Pointer To (0, 0)
 	BuiltIn.Sleep    10
+
+First Slide Test
+	[Documentation]		Select Language, we will default to English
+	Match	${T}/language.png	20

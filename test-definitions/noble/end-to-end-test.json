@@ -2,9 +2,9 @@
     "resources": [
         "installer.resource"
     ],
-    "suite": "noble",
+    "suite": "testing",
     "templates": [
         "generic"
     ],
-    "test": "testing.robot"
+    "test": "end-to-end-test.robot"
 }

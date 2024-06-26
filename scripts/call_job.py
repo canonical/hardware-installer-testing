@@ -41,12 +41,6 @@ def parse_args():
         required=True,
         help="IP of zapper machine to run the test on",
     )
-    # parser.add_argument("--testflinger-config", type=str, required=True,
-    #                     help="path to testflinger yaml file to reserve machine")
-    # parser.add_argument("--job-queue", type=str, required=True,
-    #                     help="numeric ID for the job queue")
-    # parser.add_argument("--zapper-id", type=str, required=True,
-    #                     help="Machine id of the zapper machine")
     return parser.parse_args()
 
 
