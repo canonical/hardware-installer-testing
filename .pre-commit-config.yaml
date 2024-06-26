@@ -24,24 +24,8 @@ repos:
       - id: isort
   - repo: local
     hooks:
-      # Run pylint with --disable import-error.
-      # This is meant to run on developers' machines where not all the
-      # Python modules may be installed.
       - id: pylint
         name: pylint
-        stages:
-          [commit-msg, post-checkout, post-commit, post-merge, post-rewrite,
-           commit, merge-commit, push, prepare-commit-msg]
-        entry: pylint
-        args:
-          - "--disable=import-error"
-        language: system
-        types: [python]
-      # Run pylint without disabling import-error.
-      # This is meant to run in CI (pre-commit run --hook-stage manual).
-      # The CI environment is expected to have all the required dependencies.
-      - id: pylint
-        name: pylint (with import errors)
         stages: [manual]
         entry: pylint
         language: system
