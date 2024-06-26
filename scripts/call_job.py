@@ -6,6 +6,7 @@ import json
 import os
 import pathlib
 import subprocess
+
 # import sys
 import tempfile
 import time
@@ -25,7 +26,9 @@ def parse_args():
     """
     Parses the command line args for this script.
     """
-    parser = argparse.ArgumentParser(description="Script to run a robot framework job")
+    parser = argparse.ArgumentParser(
+        description="Script to run a robot framework job"
+    )
     parser.add_argument(
         "--job-config",
         type=str,
@@ -57,7 +60,11 @@ def load_config(config_filepath):
 def load_robot_file(job_config: dict):
     """Loads the robot file specified in the job config"""
     return (
-        ROOT_DIR / "robot" / "suites" / job_config["suite"] / job_config["test"]
+        ROOT_DIR
+        / "robot"
+        / "suites"
+        / job_config["suite"]
+        / job_config["test"]
     ).read_bytes()
 
 
@@ -265,7 +272,9 @@ def main():
     post_boot_robot_file = (
         ROOT_DIR / "robot" / "suites" / job_config["suite"] / "post-boot.robot"
     ).read_bytes()
-    status, html = connection.root.robot_run(post_boot_robot_file, assets, variables)
+    status, html = connection.root.robot_run(
+        post_boot_robot_file, assets, variables
+    )
     print("post boot job finished")
     print(status)
     output_html = pathlib.Path("/tmp/zapper-install-test-post-boot.html")
