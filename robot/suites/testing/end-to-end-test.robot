@@ -7,5 +7,5 @@ Resource    ${CURDIR}/installer.resource
 ${T}    ${CURDIR}
 
 *** Test Cases ***
-Language Slide
-    Select Language
+First Slide Test
+    First Slide Test

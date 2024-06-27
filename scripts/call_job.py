@@ -262,17 +262,17 @@ def main():
     print("installer job finished")
     output_html = pathlib.Path("/tmp/client-install-test.html")
     output_html.write_text(html, encoding="utf-8")
-    time.sleep(15)
-    post_boot_robot_file = (
-        ROOT_DIR / "robot" / "suites" / job_config["suite"] / "post-boot.robot"
-    ).read_bytes()
-    status, html = connection.root.robot_run(
-        post_boot_robot_file, assets, variables
-    )
-    print("post boot job finished")
-    print(status)
-    output_html = pathlib.Path("/tmp/client-install-test-post-boot.html")
-    output_html.write_text(html, encoding="utf-8")
+    # time.sleep(15)
+    # post_boot_robot_file = (
+    #     ROOT_DIR / "robot" / "suites" / job_config["suite"] / "post-boot.robot"
+    # ).read_bytes()
+    # status, html = connection.root.robot_run(
+    #     post_boot_robot_file, assets, variables
+    # )
+    # print("post boot job finished")
+    # print(status)
+    # output_html = pathlib.Path("/tmp/client-install-test-post-boot.html")
+    # output_html.write_text(html, encoding="utf-8")
 
 
 if __name__ == "__main__":

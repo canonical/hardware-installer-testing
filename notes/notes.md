@@ -27,3 +27,5 @@ I need to also just come up with a list of issues to take to the client team:
 - c3 requires auth - can we use api keys instead for automated jobs?
 - post reboot image matching just doesn't work, it times out
 - need to have the provisioning step to boot into the installer (they're already on this)
+
+Need to reset HID after reboot I believe
