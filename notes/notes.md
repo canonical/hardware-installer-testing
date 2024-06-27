@@ -29,3 +29,4 @@ I need to also just come up with a list of issues to take to the client team:
 - need to have the provisioning step to boot into the installer (they're already on this)
 
 Need to reset HID after reboot I believe
+Need to set up jenkins secrets which include the zapper ip addresses
