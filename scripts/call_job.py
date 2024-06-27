@@ -43,6 +43,13 @@ def parse_args():
         required=True,
         help="IP of client machine to run the test on",
     )
+    parser.add_argument(
+        "--output-dir",
+        type=str,
+        required=False,
+        default="/tmp",
+        help="Directory to place the html output file in.",
+    )
     return parser.parse_args()
 
 
@@ -262,7 +269,7 @@ def main():
     status, html = connection.root.robot_run(robot_file, assets, variables)
     print(status)
     print("installer job finished")
-    output_html = pathlib.Path("/tmp/client-install-test.html")
+    output_html = pathlib.Path(f"{args.output_dir}/client-install-test.html")
     output_html.write_text(html, encoding="utf-8")
     # time.sleep(15)
     # post_boot_robot_file = (
