@@ -1,5 +1,5 @@
 """
-Calls a robot framework job from robot/suites and runs it on a zapper board hooked up to a DUT
+Calls a robot framework job from robot/suites and runs it on a client board hooked up to a DUT
 """
 import argparse
 import json
@@ -17,7 +17,7 @@ import rpyc
 ROOT_DIR = pathlib.Path(os.path.dirname(os.path.realpath(__file__)) + "/..")
 # INSTALLER_RESOURCE = ROOT_DIR / "robot" / "resources" / "installer.resource"
 RESOURCE_DIR = ROOT_DIR / "robot" / "resources"
-# ugh, zapper machine id instead maybe?
+# ugh, client machine id instead maybe?
 HOSTDATA_API = "https://certification.canonical.com/api/v2/hostdata/"
 MACHINE_API = "https://certification.canonical.com/api/v2/machines/"
 
@@ -36,10 +36,10 @@ def parse_args():
         help="json config file for installer job definition",
     )
     parser.add_argument(
-        "--zapper-ip",
+        "--client-ip",
         type=str,
         required=True,
-        help="IP of zapper machine to run the test on",
+        help="IP of client machine to run the test on",
     )
     return parser.parse_args()
 
@@ -92,10 +92,10 @@ def gather_test_assets(templates: list, resources: list):
     return assets
 
 
-def zapper_connect(zapper_ip: str):
-    """Connects to the specified zapper board"""
+def client_connect(client_ip: str):
+    """Connects to the specified client board"""
     return rpyc.connect(
-        zapper_ip,
+        client_ip,
         60000,
         config={
             "allow_public_attrs": True,
@@ -105,7 +105,7 @@ def zapper_connect(zapper_ip: str):
 
 
 def flash_usb(job_config: dict, variables: dict, connection: rpyc.Connection):
-    """Flashes the USB connected to the zapper board with a specified iso"""
+    """Flashes the USB connected to the client board with a specified iso"""
     robot_file = """*** Settings ***
 Resource    ${USB_RESOURCES}
 
@@ -159,8 +159,8 @@ reserve_data:
 #     return hostdata_json["ip_address"]
 
 
-# def get_dut_machine_id(zapper_id: str):
-#     api_url = f"{MACHINE_API}/{zapper_id}/"
+# def get_dut_machine_id(client_id: str):
+#     api_url = f"{MACHINE_API}/{client_id}/"
 #     machine_json = json.loads(requests.get(api_url).content)
 #     return machine_json["parent_canonical_id"]
 
@@ -218,17 +218,17 @@ def main():
         "USB_RESOURCES": "resources/usb_disk.resource",
     }
     assets = gather_test_assets(templates, local_resources)
-    zapper_ip = args.zapper_ip
-    connection = zapper_connect(zapper_ip)
-    # Set up zapper connection
+    client_ip = args.client_ip
+    connection = client_connect(client_ip)
+    # Set up client connection
     ###################################################
     # development stuff
     # api calls
     # the api requires authentication. UGH. I mean of course but still
-    # zapper_ip = get_machine_ip(args.zapper_id)
-    # dut_machine_id = get_dut_machine_id(args.zapper_id)
+    # client_ip = get_machine_ip(args.client_id)
+    # dut_machine_id = get_dut_machine_id(args.client_id)
     # dut_ip = get_machine_ip(dut_machine_id)
-    # print(zapper_ip)
+    # print(client_ip)
     # print(dut_machine_id)
     # print(dut_ip)
     # sys.exit(0)
@@ -242,15 +242,15 @@ def main():
     # if not check_ssh_connectivity(dut_ip):
     #     print(f"ssh-ing to machine {dut_ip} failed!")
     # print(f"ssh-ing to machine {dut_ip} succeeded!")
-    # print(f"Checking connectivity to zapper {zapper_ip}")
-    # if not check_ssh_connectivity(zapper_ip):
-    #     print(f"ssh-ing to machine {zapper_ip} failed!")
-    # print(f"ssh-ing to machine {zapper_ip} succeeded!")
+    # print(f"Checking connectivity to client {client_ip}")
+    # if not check_ssh_connectivity(client_ip):
+    #     print(f"ssh-ing to machine {client_ip} failed!")
+    # print(f"ssh-ing to machine {client_ip} succeeded!")
     # Double check that the usb is connected
-    # print("enabling usb on zapper machine")
-    # run_remote_command(zapper_ip, "zapper typecmux set DUT")
+    # print("enabling usb on client machine")
+    # run_remote_command(client_ip, "client typecmux set DUT")
     # Flash the usb with the iso
-    # print(f"Flashing zapper usb with iso...")
+    # print(f"Flashing client usb with iso...")
     # status, html = flash_usb(job_config, variables, connection)
     # Reboot the DUT
     # run_remote_command(dut_ip, "reboot")
@@ -260,7 +260,7 @@ def main():
     status, html = connection.root.robot_run(robot_file, assets, variables)
     print(status)
     print("installer job finished")
-    output_html = pathlib.Path("/tmp/zapper-install-test.html")
+    output_html = pathlib.Path("/tmp/client-install-test.html")
     output_html.write_text(html, encoding="utf-8")
     time.sleep(15)
     post_boot_robot_file = (
@@ -271,7 +271,7 @@ def main():
     )
     print("post boot job finished")
     print(status)
-    output_html = pathlib.Path("/tmp/zapper-install-test-post-boot.html")
+    output_html = pathlib.Path("/tmp/client-install-test-post-boot.html")
     output_html.write_text(html, encoding="utf-8")
 
 
