@@ -47,7 +47,7 @@ def parse_args():
         "--output-dir",
         type=str,
         required=False,
-        default="/tmp",
+        default=".",
         help="Directory to place the html output file in.",
     )
     return parser.parse_args()
