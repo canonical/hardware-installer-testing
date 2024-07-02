@@ -206,6 +206,10 @@ Wait For Install To Finish
 
 Wait For Reboot To Finish
 	[Documentation]		Login Prompt
+	#  A sleep here isn't great... but it should do, hopefully...
+	BuiltIn.Sleep	15
+	# The command below isn't yet included in the snap.
+	Restart Video Input
 	Match	${T}/login-prompt.png		600
 	Move Pointer To ${T}/login-prompt.png
 	Click LEFT Button
