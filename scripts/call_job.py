@@ -2,6 +2,7 @@
 Calls a robot framework job from robot/suites and runs it on a client board hooked up to a DUT
 """
 import argparse
+import base64
 import json
 import os
 import pathlib
@@ -9,6 +10,8 @@ import subprocess
 
 # import sys
 import tempfile
+
+import requests
 
 # import requests
 import rpyc
@@ -50,7 +53,49 @@ def parse_args():
         default=".",
         help="Directory to place the html output file in.",
     )
+    parser.add_argument(
+        "--c3-client-id",
+        type=str,
+        required=True,
+        help="client id for c3 authentication",
+    )
+    parser.add_argument(
+        "--c3-secret",
+        type=str,
+        required=True,
+        help="secret string for c3 authentication",
+    )
     return parser.parse_args()
+
+
+def get_access_token(client_id, secret):
+    credential = base64.b64encode(
+        "{0}:{1}".format(client_id, secret).encode("utf-8")
+    ).decode("utf-8")
+    headers = {
+        "Authorization": "Basic {0}".format(credential),
+        "Content-Type": "application/x-www-form-urlencoded",
+    }
+    params = {"grant_type": "client_credentials", "scope": "read write"}
+    response = requests.post(
+        "https://certification.canonical.com/oauth2/token/",
+        headers=headers,
+        data=params,
+    )
+    response.raise_for_status()
+    return response.json()["access_token"]
+
+
+def c3_query(access_token, url):
+    headers = {"Authorization": "Bearer {0}".format(access_token)}
+    response = requests.get(url, headers=headers)
+    response.raise_for_status()
+    results = response.json()
+    for result in results["results"]:
+        yield result
+
+    if results["next"]:
+        yield from c3_query(access_token, results["next"])
 
 
 def load_config(config_filepath):
@@ -160,12 +205,14 @@ reserve_data:
             return False
 
 
-# def get_machine_ip(machine_id: str):
-#     api_url = f"{HOSTDATA_API}/{machine_id}/"
-#     hostdata_json = json.loads(requests.get(api_url).content)
-#     print(hostdata_json.keys())
-#     print(hostdata_json["detail"])
-#     return hostdata_json["ip_address"]
+def get_machine_ip(machine_id: str, access_token: str):
+    api_url = f"{HOSTDATA_API}/{machine_id}/"
+
+    print(c3_query(access_token, api_url))
+    # hostdata_json = json.loads(requests.get(api_url).content)
+    # print(hostdata_json.keys())
+    # print(hostdata_json["detail"])
+    # return hostdata_json["ip_address"]
 
 
 # def get_dut_machine_id(client_id: str):
@@ -217,6 +264,9 @@ reserve_data:
 def main():
     """Main function which runs the test specified in the job config"""
     args = parse_args()
+    c3_token = get_access_token(args.c3_client_id, args.c3_secret)
+    ########################################################
+    # actual job stuff
     job_config = load_config(args.job_config)
     robot_file = load_robot_file(job_config)
     templates = load_list_of_templates(job_config)
@@ -229,59 +279,28 @@ def main():
     assets = gather_test_assets(templates, local_resources)
     client_ip = args.client_ip
     connection = client_connect(client_ip)
+    ########################################################
     # Set up client connection
     ###################################################
+    # How can we refactor this?
+    # We can use, for now, whilst there's no
     # development stuff
     # api calls
     # the api requires authentication. UGH. I mean of course but still
-    # client_ip = get_machine_ip(args.client_id)
+    client_ip = get_machine_ip(args.client_id)
     # dut_machine_id = get_dut_machine_id(args.client_id)
     # dut_ip = get_machine_ip(dut_machine_id)
     # print(client_ip)
     # print(dut_machine_id)
     # print(dut_ip)
-    # sys.exit(0)
-    # Reserve the machine
-    # print(f"Reserving machine {dut_machine_id}")
-    # if not reserve_machine(dut_machine_id):
-    #     print(f"Reserving machine {dut_machine_id} failed!")
-    # print(f"Machine {dut_machine_id} reserved")
-    # # Double check connectivity to machine
-    # print(f"Machine {dut_machine_id} reserved, checking connectivity...")
-    # if not check_ssh_connectivity(dut_ip):
-    #     print(f"ssh-ing to machine {dut_ip} failed!")
-    # print(f"ssh-ing to machine {dut_ip} succeeded!")
-    # print(f"Checking connectivity to client {client_ip}")
-    # if not check_ssh_connectivity(client_ip):
-    #     print(f"ssh-ing to machine {client_ip} failed!")
-    # print(f"ssh-ing to machine {client_ip} succeeded!")
-    # Double check that the usb is connected
-    # print("enabling usb on client machine")
-    # run_remote_command(client_ip, "client typecmux set DUT")
-    # Flash the usb with the iso
-    # print(f"Flashing client usb with iso...")
-    # status, html = flash_usb(job_config, variables, connection)
-    # Reboot the DUT
-    # run_remote_command(dut_ip, "reboot")
-    # Run the robot job to boot into the installer
-    # run_boot_process(connection, variables)
     ###################################################
+    # run the actual job
     status, html = connection.root.robot_run(robot_file, assets, variables)
     print(status)
     print("installer job finished")
     output_html = pathlib.Path(f"{args.output_dir}/client-install-test.html")
     output_html.write_text(html, encoding="utf-8")
-    # time.sleep(15)
-    # post_boot_robot_file = (
-    #     ROOT_DIR / "robot" / "suites" / job_config["suite"] / "post-boot.robot"
-    # ).read_bytes()
-    # status, html = connection.root.robot_run(
-    #     post_boot_robot_file, assets, variables
-    # )
-    # print("post boot job finished")
-    # print(status)
-    # output_html = pathlib.Path("/tmp/client-install-test-post-boot.html")
-    # output_html.write_text(html, encoding="utf-8")
+    ###################################################
 
 
 if __name__ == "__main__":

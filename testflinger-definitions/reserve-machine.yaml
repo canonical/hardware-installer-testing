@@ -4,3 +4,7 @@ reserve_data:
   ssh_keys:
     - lp:andersson123
   timeout: 3600
+# not sure if we want to do what's below
+# test_data:
+#   test_cmds: |
+#     python3 ./scripts/call_job.py --job-config ../test-definitions/end-to-end-test.json --client-ip $ZAPPER_IP

@@ -5,6 +5,13 @@ Documentation       Shared resources for installer testing
 ${T}    ${CURDIR}
 
 *** Keywords ***
+Search
+	[Arguments]		${template}		${timeout}=10
+	[Documentation]		Kind of like "Optional Match"
+	${match}=	Run Keyword And Return Status
+	...		VIDEO.Match		${template}		${timeout}
+	RETURN ${match}
+
 Select Language
 	[Documentation]		Select Language, we will default to English
 	Match	${T}/language.png	20
@@ -212,11 +219,13 @@ Wait For Reboot To Finish
 
 Installer Update Available
 	[Documentation]		Installer update available slide
-	Match	${T}/installer-update-available.png		20
-	Move Pointer To ${T}/skip.png
-	Click LEFT Button
-	Move Pointer To (0, 0)
-	BuiltIn.Sleep    10
+	${found}=		Search		${T}/installer-update-available.png		20
+	IF		${found}
+		Move Pointer To ${T}/skip.png
+		Click LEFT Button
+		Move Pointer To (0, 0)
+		BuiltIn.Sleep    10
+	END
 
 Try Or Install
 	[Documentation]		Choose try or install
