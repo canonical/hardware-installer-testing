@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 """
 Calls a robot framework job from robot/suites and runs it on a client board hooked up to a DUT
 """
@@ -10,6 +11,7 @@ import subprocess
 
 # import sys
 import tempfile
+import webbrowser
 
 import requests
 
@@ -41,10 +43,10 @@ def parse_args():
         help="json config file for installer job definition",
     )
     parser.add_argument(
-        "--client-ip",
+        "--client-id",
         type=str,
         required=True,
-        help="IP of client machine to run the test on",
+        help="id of client machine in c3",
     )
     parser.add_argument(
         "--output-dir",
@@ -65,15 +67,26 @@ def parse_args():
         required=True,
         help="secret string for c3 authentication",
     )
+    parser.add_argument(
+        "--interactive",
+        "-i",
+        type=bool,
+        required=False,
+        action="store_true",
+    )
     return parser.parse_args()
 
 
 def get_access_token(client_id, secret):
+    """
+    Generates an access token for c3
+    """
     credential = base64.b64encode(
-        "{0}:{1}".format(client_id, secret).encode("utf-8")
+        # "{0}:{1}".format(client_id, secret).encode("utf-8")
+        f"{client_id}:{secret}".encode("utf-8")
     ).decode("utf-8")
     headers = {
-        "Authorization": "Basic {0}".format(credential),
+        "Authorization": f"Basic {credential}",
         "Content-Type": "application/x-www-form-urlencoded",
     }
     params = {"grant_type": "client_credentials", "scope": "read write"}
@@ -81,21 +94,21 @@ def get_access_token(client_id, secret):
         "https://certification.canonical.com/oauth2/token/",
         headers=headers,
         data=params,
+        timeout=30,
     )
     response.raise_for_status()
     return response.json()["access_token"]
 
 
 def c3_query(access_token, url):
-    headers = {"Authorization": "Bearer {0}".format(access_token)}
-    response = requests.get(url, headers=headers)
+    """
+    Function to query c3 api, provided by cert team
+    """
+    headers = {"Authorization": f"Bearer {access_token}"}
+    response = requests.get(url, headers=headers, timeout=30)
     response.raise_for_status()
     results = response.json()
-    for result in results["results"]:
-        yield result
-
-    if results["next"]:
-        yield from c3_query(access_token, results["next"])
+    return results
 
 
 def load_config(config_filepath):
@@ -158,22 +171,23 @@ def client_connect(client_ip: str):
     )
 
 
-def flash_usb(job_config: dict, variables: dict, connection: rpyc.Connection):
-    """Flashes the USB connected to the client board with a specified iso"""
-    robot_file = """*** Settings ***
-Resource    ${USB_RESOURCES}
+# unused as of yet
+# def flash_usb(job_config: dict, variables: dict, connection: rpyc.Connection):
+#     """Flashes the USB connected to the client board with a specified iso"""
+#     robot_file = """*** Settings ***
+# Resource    ${USB_RESOURCES}
 
-*** Variables ***
-${T}    ${CURDIR}
+# *** Variables ***
+# ${T}    ${CURDIR}
 
-*** Test Cases ***
-Flash Noble USB
-    [Documentation] Flashes the USB with the Noble ISO
-    Download and Provision via USB    """
-    robot_file += job_config["iso-url"] + "\n"
-    robot_file_bytes = str.encode(robot_file)
-    status, html = connection.root.robot_run(robot_file_bytes, {}, variables)
-    return status, html
+# *** Test Cases ***
+# Flash Noble USB
+#     [Documentation] Flashes the USB with the Noble ISO
+#     Download and Provision via USB    """
+#     robot_file += job_config["iso-url"] + "\n"
+#     robot_file_bytes = str.encode(robot_file)
+#     status, html = connection.root.robot_run(robot_file_bytes, {}, variables)
+#     return status, html
 
 
 def reserve_machine(queue: str):
@@ -199,28 +213,31 @@ reserve_data:
                 check=True,
             )
             print("Submitting testflinger job succeeded")
-            return True
-        except subprocess.CalledProcessError as _:
-            print("Submitting testflinger job failed")
-            return False
+        except subprocess.CalledProcessError as exc:
+            raise subprocess.CalledProcessError(
+                f"Submitting testflinger job failed with: {exc}", cmd=None
+            ) from exc
 
 
-def get_machine_ip(machine_id: str, access_token: str):
-    api_url = f"{HOSTDATA_API}/{machine_id}/"
-
-    print(c3_query(access_token, api_url))
-    # hostdata_json = json.loads(requests.get(api_url).content)
-    # print(hostdata_json.keys())
-    # print(hostdata_json["detail"])
-    # return hostdata_json["ip_address"]
-
-
-# def get_dut_machine_id(client_id: str):
-#     api_url = f"{MACHINE_API}/{client_id}/"
-#     machine_json = json.loads(requests.get(api_url).content)
-#     return machine_json["parent_canonical_id"]
+def c3_get_machine_ip(machine_id: str, access_token: str):
+    """
+    Gets the ip address of a machine from c3 using its machine id
+    """
+    api_url = f"{HOSTDATA_API}{machine_id}/"
+    data = c3_query(access_token, api_url)
+    return data["ip_address"]
 
 
+def c3_get_dut_machine_id(client_id: str, access_token: str):
+    """
+    Gets the machine id of the DUT based on the client id
+    """
+    api_url = f"{MACHINE_API}{client_id}/"
+    data = c3_query(access_token, api_url)
+    return data["parent_canonical_id"]
+
+
+# unused as of yet
 # def check_ssh_connectivity(machine_ip: str):
 #     print(f"Checking connectivity to {machine_ip}")
 #     ssh_command = f"ssh ubuntu@{machine_ip} :"
@@ -238,27 +255,12 @@ def get_machine_ip(machine_id: str, access_token: str):
 #     return False
 
 
+# unused as of yet
 # def run_remote_command(machine_ip: str, command: str):
 #     subprocess.run(
 #         f"ssh@{machine_ip} {command}".split(" "),
 #         check=True,
 #     )
-
-
-# def gather_boot_templates():
-#     templates = []
-#     templates_dir = (ROOT_DIR / "robot" / "templates" / "boot").glob("*")
-#     templates = [x.absolute() for x in templates_dir if x.is_file()]
-#     return templates
-
-
-# def run_boot_process(connection: rpyc.Connection, variables: dict):
-#     assets = gather_boot_templates()
-#     robot_boot_file = (
-#         ROOT_DIR / "robot" / "suites" / "boot" / "boot-into-usb.robot"
-#     ).read_bytes()
-#     status, html = connection.root.robot_run(robot_boot_file, assets, variables)
-#     return status
 
 
 def main():
@@ -277,19 +279,17 @@ def main():
         "USB_RESOURCES": "resources/usb_disk.resource",
     }
     assets = gather_test_assets(templates, local_resources)
-    client_ip = args.client_ip
-    connection = client_connect(client_ip)
     ########################################################
     # Set up client connection
     ###################################################
-    # How can we refactor this?
-    # We can use, for now, whilst there's no
-    # development stuff
-    # api calls
-    # the api requires authentication. UGH. I mean of course but still
-    client_ip = get_machine_ip(args.client_id)
-    # dut_machine_id = get_dut_machine_id(args.client_id)
-    # dut_ip = get_machine_ip(dut_machine_id)
+    # in the future once c3 api is production ready this
+    # may change - instead of using client id we may use dut id
+    client_ip = c3_get_machine_ip(args.client_id, c3_token)
+    dut_machine_id = c3_get_dut_machine_id(args.client_id, c3_token)
+    reserve_machine(dut_machine_id)
+    connection = client_connect(client_ip)
+
+    # dut_ip = get_machine_ip(dut_machine_id, c3_token)
     # print(client_ip)
     # print(dut_machine_id)
     # print(dut_ip)
@@ -300,6 +300,8 @@ def main():
     print("installer job finished")
     output_html = pathlib.Path(f"{args.output_dir}/client-install-test.html")
     output_html.write_text(html, encoding="utf-8")
+    if args.interactive:
+        webbrowser.open(output_html)
     ###################################################
 
 
