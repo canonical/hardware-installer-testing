@@ -70,7 +70,6 @@ def parse_args():
     parser.add_argument(
         "--interactive",
         "-i",
-        type=bool,
         required=False,
         action="store_true",
     )
