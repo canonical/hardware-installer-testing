@@ -7,6 +7,7 @@ import base64
 import json
 import os
 import pathlib
+import re
 import subprocess
 
 # import sys
@@ -189,6 +190,7 @@ def client_connect(client_ip: str):
 #     return status, html
 
 
+# doesn't work right now?!?!?!?!
 def reserve_machine(queue: str):
     """Reserves the machine via testflinger"""
     testflinger_config = f"""job_queue: {queue}
@@ -196,26 +198,51 @@ reserve_data:
   ssh_keys:
     - lp:andersson123
   timeout: 3600
-"""  # Change the ssh keys later on ovvi
-    with tempfile.NamedTemporaryFile() as testflinger_file:
+"""  # Change the ssh keys later on
+    # delete=False seems to be a hack required for using a tempfile with a subprocess
+    with tempfile.NamedTemporaryFile(
+        suffix=".yaml", delete=False, dir="."
+    ) as testflinger_file:
         pathlib.Path(testflinger_file.name).write_text(
             testflinger_config, encoding="utf-8"
         )
         try:
-            print("Submitting testflinger job to reserve machine")
-            subprocess.run(
+            submission_output = subprocess.run(
                 [
                     "testflinger",
                     "submit",
                     testflinger_file.name,
                 ],
                 check=True,
+                capture_output=True,
+                text=True,
             )
+            job_id = re.search(
+                "job_id: (.*)\n", submission_output.stdout
+            ).group(1)
             print("Submitting testflinger job succeeded")
+            testflinger_file.close()
+            return job_id
         except subprocess.CalledProcessError as exc:
-            raise subprocess.CalledProcessError(
-                f"Submitting testflinger job failed with: {exc}", cmd=None
-            ) from exc
+            print(f"Submitting testflinger job failed with: {exc}")
+            testflinger_file.close()
+            return None
+
+
+def cancel_reservation(job_id: str):
+    """
+    Cancels the previous testflinger reservation - freeing up the machine for other tests
+    """
+    print(f"Cancelling reservation job with id: {job_id}")
+    subprocess.run(
+        [
+            "testflinger",
+            "cancel",
+            job_id,
+        ],
+        check=True,
+    )
+    print(f"Job {job_id} cancelled - machine is no longer reserved")
 
 
 def c3_get_machine_ip(machine_id: str, access_token: str):
@@ -285,7 +312,7 @@ def main():
     # may change - instead of using client id we may use dut id
     client_ip = c3_get_machine_ip(args.client_id, c3_token)
     dut_machine_id = c3_get_dut_machine_id(args.client_id, c3_token)
-    reserve_machine(dut_machine_id)
+    job_id = reserve_machine(dut_machine_id)
     connection = client_connect(client_ip)
 
     # dut_ip = get_machine_ip(dut_machine_id, c3_token)
@@ -299,8 +326,9 @@ def main():
     print("installer job finished")
     output_html = pathlib.Path(f"{args.output_dir}/client-install-test.html")
     output_html.write_text(html, encoding="utf-8")
+    cancel_reservation(job_id)
     if args.interactive:
-        webbrowser.open(output_html)
+        webbrowser.open(str(output_html))
     ###################################################
 
 
