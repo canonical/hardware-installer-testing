@@ -311,8 +311,8 @@ def main():
     # in the future once c3 api is production ready this
     # may change - instead of using client id we may use dut id
     client_ip = c3_get_machine_ip(args.client_id, c3_token)
-    dut_machine_id = c3_get_dut_machine_id(args.client_id, c3_token)
-    job_id = reserve_machine(dut_machine_id)
+    # dut_machine_id = c3_get_dut_machine_id(args.client_id, c3_token)
+    # job_id = reserve_machine(dut_machine_id)
     connection = client_connect(client_ip)
 
     # dut_ip = get_machine_ip(dut_machine_id, c3_token)
@@ -326,7 +326,7 @@ def main():
     print("installer job finished")
     output_html = pathlib.Path(f"{args.output_dir}/client-install-test.html")
     output_html.write_text(html, encoding="utf-8")
-    cancel_reservation(job_id)
+    # cancel_reservation(job_id)
     if args.interactive:
         webbrowser.open(str(output_html))
     ###################################################
