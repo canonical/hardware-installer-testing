@@ -1,3 +1,4 @@
+# after the installer exits, post update, there's no try or install
 *** Settings ***
 Resource    ${KVM_RESOURCES}
 Resource    ${USB_RESOURCES}
@@ -19,11 +20,20 @@ Keyboard Layout
 Internet Connection
     Internet Connection
 
-Skip Installer Update
-    Skip Installer Update
+Update Installer and Open Installer
+    Update Installer and Open Installer
 
-Try Or Install
-    Try Or Install
+Language Slide
+    Select Language
+
+A11y Slide
+    A11y Slide
+
+Keyboard Layout
+    Keyboard Layout
+
+Internet Connection
+    Internet Connection
 
 Interactive vs Automated
     Interactive vs Automated
@@ -34,8 +44,8 @@ Default vs Extended
 Proprietary Software
     Proprietary Software
 
-Entire Disk With LVM Plus Encryption
-    Entire Disk With LVM Plus Encryption
+Entire Disk
+    Entire Disk
 
 Choose Where to Install Ubuntu
     Choose Where to Install Ubuntu

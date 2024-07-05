@@ -20,6 +20,12 @@ Keyboard Layout
 Internet Connection
     Internet Connection
 
+Skip Installer Update
+    Skip Installer Update
+
+Try Or Install
+    Try Or Install
+
 Interactive vs Automated
     Interactive vs Automated
 

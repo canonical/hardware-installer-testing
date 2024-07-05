@@ -1,3 +1,4 @@
+# This should ONLY be run on machines with nvidia hardware
 *** Settings ***
 Resource    ${KVM_RESOURCES}
 Resource    ${USB_RESOURCES}
@@ -7,6 +8,7 @@ Resource    ${CURDIR}/installer.resource
 ${T}    ${CURDIR}
 
 *** Test Cases ***
+# Installer just sometimes randomly exits
 Language Slide
     Select Language
 
@@ -31,11 +33,11 @@ Interactive vs Automated
 Default vs Extended
     Default vs Extended
 
-Proprietary Software
-    Proprietary Software
+Include Proprietary Software
+    Include Proprietary Software
 
-Entire Disk With LVM Plus Encryption
-    Entire Disk With LVM Plus Encryption
+Entire Disk
+    Entire Disk
 
 Choose Where to Install Ubuntu
     Choose Where to Install Ubuntu

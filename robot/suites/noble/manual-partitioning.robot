@@ -34,8 +34,8 @@ Default vs Extended
 Proprietary Software
     Proprietary Software
 
-Entire Disk With LVM Plus Encryption
-    Entire Disk With LVM Plus Encryption
+Manual Partitioning
+    Manual Partitioning
 
 Choose Where to Install Ubuntu
     Choose Where to Install Ubuntu
