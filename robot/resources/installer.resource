@@ -43,23 +43,25 @@ Keyboard Layout
 	Move Pointer To (100, 100)
 	BuiltIn.Sleep    10
 
+Disable Wired Internet Connection
+	[Documentation]		Disable internet connection via the top panel to test an install with no internet
+	Move Pointer To (100, 100)
+	Move Pointer To ${T}/open-top-panel.png
+	BuiltIn.Sleep	1
+	Click LEFT Button
+	BuiltIn.Sleep	1
+	Move Pointer To ${T}/click-connection.png
+	BuiltIn.Sleep	1
+	Click LEFT Button
+	BuiltIn.Sleep	1
+	Move Pointer To ${T}/close-top-panel.png
+	BuiltIn.Sleep	1
+	Click LEFT Button
+	BuiltIn.Sleep	1
+
 Internet Connection
 	[Documentation]		Connect to the Internet Slide
 	Match	${T}/internet-connection.png	20
-	Move Pointer To ${T}/next.png
-	BuiltIn.Sleep     3
-	Click LEFT Button
-	BuiltIn.Sleep     3
-	Move Pointer To (100, 100)
-	BuiltIn.Sleep    10
-
-Internet Connection No Internet
-	[Documentation]		Connect to the Internet Slide but don't connect to the internet
-	Match	${T}/internet-connection.png	20
-	Move Pointer To ${T}/do-not-connect-to-the-internet.png
-	BuiltIn.Sleep     3
-	Click LEFT Button
-	BuiltIn.Sleep     3
 	Move Pointer To ${T}/next.png
 	BuiltIn.Sleep     3
 	Click LEFT Button

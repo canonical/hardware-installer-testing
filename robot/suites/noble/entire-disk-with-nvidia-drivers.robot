@@ -36,8 +36,8 @@ Default vs Extended
 Include Proprietary Software
     Include Proprietary Software
 
-Entire Disk
-    Entire Disk
+Select Erase Disk and Reinstall
+    Select Erase Disk and Reinstall
 
 Choose Where to Install Ubuntu
     Choose Where to Install Ubuntu

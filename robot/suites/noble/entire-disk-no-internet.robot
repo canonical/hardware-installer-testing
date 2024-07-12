@@ -7,6 +7,9 @@ Resource    ${CURDIR}/installer.resource
 ${T}    ${CURDIR}
 
 *** Test Cases ***
+Disable Wired Internet Connection
+    Disable Wired Internet Connection
+
 Language Slide
     Select Language
 
@@ -16,8 +19,8 @@ A11y Slide
 Keyboard Layout
     Keyboard Layout
 
-Internet Connection No Internet
-    Internet Connection No Internet
+Internet Connection
+    Internet Connection
 
 Skip Installer Update
     Skip Installer Update
