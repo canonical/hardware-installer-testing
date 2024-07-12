@@ -1,0 +1,11 @@
+{
+    "iso-url": "https://releases.ubuntu.com/noble/ubuntu-24.04-desktop-amd64.iso",
+    "resources": [
+        "installer.resource"
+    ],
+    "suite": "noble",
+    "templates": [
+        "generic"
+    ],
+    "test": "entire-disk-no-internet.robot"
+}

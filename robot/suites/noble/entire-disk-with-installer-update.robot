@@ -23,44 +23,44 @@ Internet Connection
 Update Installer and Open Installer
     Update Installer and Open Installer
 
-Language Slide
+Post Update Language Slide
     Select Language
 
-A11y Slide
+Post Update A11y Slide
     A11y Slide
 
-Keyboard Layout
+Post Update Keyboard Layout
     Keyboard Layout
 
-Internet Connection
+Post Update Internet Connection
     Internet Connection
 
-Interactive vs Automated
+Post Update Interactive vs Automated
     Interactive vs Automated
 
-Default vs Extended
+Post Update Default vs Extended
     Default vs Extended
 
-Proprietary Software
+Post Update Proprietary Software
     Proprietary Software
 
-Entire Disk
-    Entire Disk
+Post Update Select Erase Disk and Reinstall
+    Select Erase Disk and Reinstall
 
-Choose Where to Install Ubuntu
+Post Update Choose Where to Install Ubuntu
     Choose Where to Install Ubuntu
 
-Create Account
+Post Update Create Account
     Create Account
 
-Select Timezone
+Post Update Select Timezone
     Select Timezone
 
-Review Installation
+Post Update Review Installation
     Review Installation
 
-Wait For Install To Finish
+Post Update Wait For Install To Finish
     Wait For Install To Finish
 
-Wait For Reboot To Finish
+Post Update Wait For Reboot To Finish
     Wait For Reboot To Finish

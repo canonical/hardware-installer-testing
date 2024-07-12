@@ -6,5 +6,5 @@
     "templates": [
         "generic"
     ],
-    "test": "entire-disk-with-zfs-and-encryption.robot"
+    "test": "entire-disk-with-zfs-plus-encryption.robot"
 }

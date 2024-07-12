@@ -40,6 +40,9 @@ Entire Disk With ZFS Plus Encryption
 Choose Where to Install Ubuntu
     Choose Where to Install Ubuntu
 
+Disk Passphrase Setup
+    Disk Passphrase Setup
+
 Create Account
     Create Account
 
@@ -52,5 +55,5 @@ Review Installation
 Wait For Install To Finish
     Wait For Install To Finish
 
-Wait For Reboot To Finish
-    Wait For Reboot To Finish
+Wait For ZFS Encrypted Reboot To Finish
+    Wait For ZFS Encrypted Reboot To Finish

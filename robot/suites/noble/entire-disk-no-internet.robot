@@ -16,8 +16,8 @@ A11y Slide
 Keyboard Layout
     Keyboard Layout
 
-Internet Connection
-    Internet Connection
+Internet Connection No Internet
+    Internet Connection No Internet
 
 Skip Installer Update
     Skip Installer Update
@@ -34,14 +34,11 @@ Default vs Extended
 Proprietary Software
     Proprietary Software
 
-Entire Disk With LVM Plus Encryption
-    Entire Disk With LVM Plus Encryption
+Select Erase Disk and Reinstall
+    Select Erase Disk and Reinstall
 
 Choose Where to Install Ubuntu
     Choose Where to Install Ubuntu
-
-Disk Passphrase Setup
-    Disk Passphrase Setup
 
 Create Account
     Create Account
@@ -55,5 +52,5 @@ Review Installation
 Wait For Install To Finish
     Wait For Install To Finish
 
-Wait For LVM Encrypted Reboot To Finish
-    Wait For LVM Encrypted Reboot To Finish
+Wait For Reboot To Finish
+    Wait For Reboot To Finish
