@@ -10,7 +10,6 @@ Search
 	[Documentation]		Kind of like "Optional Match"
 	${match}=	Run Keyword And Return Status
 	...		VIDEO.Match		${template}		${timeout}
-	# not the syntax used in the zapper repo, which is odd!
 	[return]	${match}
 
 Select Language
