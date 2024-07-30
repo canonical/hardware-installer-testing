@@ -460,7 +460,7 @@ Manual Partitioning
 	Move Pointer To (100, 100)
 	BuiltIn.Sleep    10
 
-Update Installer and Open Installer
+Update Installer
 	[Documentation]		Updates the installer snap and reinstalls it
 	Match	${T}/installer-update-available.png		20
 	Move Pointer To ${T}/update-now.png
@@ -474,7 +474,73 @@ Update Installer and Open Installer
 	BuiltIn.Sleep     3
 	Click LEFT Button
 	BuiltIn.Sleep     3
+
+Open Installer
 	Move Pointer To ${T}/installer-icon.png
-	BuiltIn.Sleep     3
 	Click LEFT Button
-	BuiltIn.Sleep     3
+
+OEM Wait For Reboot To Finish And Do GIS
+	[Documentation]		Login Prompt
+	#  A sleep here isn't great... but it should do, hopefully...
+	BuiltIn.Sleep	10
+	Restart Video Input
+	Match	${T}/gis-welcome.png		20
+	Move Pointer To	${T}/gis-next.png
+	Click LEFT Button
+	Match	${T}/gis-typing.png		20
+	Move Pointer To	${T}/gis-next.png
+	Click LEFT Button
+	Match	${T}/gis-timezone.png		20
+	Move Pointer To ${T}/gis-timezone-search-cities.png
+	Click LEFT Button
+    Type String     taipei
+	Match	${T}/gis-timezone-taipei.png	20
+	Move Pointer To ${T}/gis-timezone-taipei-taiwan.png
+	Click LEFT Button
+	Move Pointer To	${T}/gis-next.png
+	Click LEFT Button
+	Match	${T}/gis-about-you.png		20
+    Type String		ubuntu
+	Match	${T}/gis-about-you-user-data-filled.png		20
+	Move Pointer To	${T}/gis-next.png
+	Click LEFT Button
+	Match	${T}/gis-set-password.png		20
+    Type String		ubuntu
+	${combo}	Create List		TAB
+	Keys Combo		${combo}
+	Keys Combo		${combo}
+    Type String		ubuntu
+	Move Pointer To	${T}/gis-next.png
+	Click LEFT Button
+	Match	${T}/gis-done.png		20
+	Move Pointer To	${T}/gis-start-using-ubuntu.png
+	Click LEFT Button
+	Match	${T}/noble-desktop-post-oem-install.png		30
+
+Select TPM FDE
+    [Documentation] 	This slide assumes the disk is empty
+	Match	${T}/disk-setup.png		20
+	Move Pointer To ${T}/erase-disk-install-ubuntu.png
+	Click LEFT Button
+	Move Pointer To ${T}/advanced-features.png
+	Click LEFT Button
+	Match	${T}/tpm-fde-available.png		20
+	Move Pointer To ${T}/tpm-fde-available.png
+	Click LEFT Button
+	Match	${T}/tpm-fde-selected.png		20
+	Move Pointer To ${T}/advanced-features-ok.png
+	Click LEFT Button
+	Move Pointer To ${T}/next.png
+	Click LEFT Button
+	BuiltIn.Sleep    10
+
+TPM Recovery Key Slide
+	[Documentation]		Bluh
+	Match	${T}/tpm-recovery-key.png		20
+	Move Pointer To ${T}/next.png
+	Click LEFT Button
+	BuiltIn.Sleep    10
+
+Exit Installer
+    Move Pointer To ${T}/exit-installer.png
+    Click LEFT Button

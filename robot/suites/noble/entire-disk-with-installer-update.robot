@@ -20,8 +20,11 @@ Keyboard Layout
 Internet Connection
     Internet Connection
 
-Update Installer and Open Installer
-    Update Installer and Open Installer
+Update Installer
+    Update Installer
+
+Open Installer
+    Open Installer
 
 Post Update Language Slide
     Select Language
