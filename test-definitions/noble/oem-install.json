@@ -1,0 +1,11 @@
+{
+    "resources": [
+        "installer.resource",
+        "general.resource"
+    ],
+    "suite": "noble",
+    "templates": [
+        "generic"
+    ],
+    "test": "oem-install.robot"
+}
