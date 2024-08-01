@@ -44,10 +44,10 @@ def parse_args():
         help="json config file for installer job definition",
     )
     parser.add_argument(
-        "--client-id",
+        "--client-ip",
         type=str,
         required=True,
-        help="id of client machine in c3",
+        help="ip of client machine hooked up to the DUT",
     )
     parser.add_argument(
         "--output-dir",
@@ -55,18 +55,6 @@ def parse_args():
         required=False,
         default=".",
         help="Directory to place the html output file in.",
-    )
-    parser.add_argument(
-        "--c3-client-id",
-        type=str,
-        required=True,
-        help="client id for c3 authentication",
-    )
-    parser.add_argument(
-        "--c3-secret",
-        type=str,
-        required=True,
-        help="secret string for c3 authentication",
     )
     parser.add_argument(
         "--interactive",

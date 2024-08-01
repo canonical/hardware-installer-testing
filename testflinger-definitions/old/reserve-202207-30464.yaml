@@ -1,0 +1,34 @@
+---
+job_queue: 202207-30464
+# reserve_data not needed with provision_data - reserve_data just for playing w machine
+# reserve_data runs after test phase - good for debugging a failing test
+# Do a simple test first with this with just first installer slide
+# reserve_data:
+#   ssh_keys:
+#     - lp:andersson123
+#   timeout: 3600
+# For autoinstall, the autoinstall automation is already supported
+# the testdata section is POST install checks
+provision_data:
+  url: https://releases.ubuntu.com/noble/ubuntu-24.04-desktop-amd64.iso
+  robot_tasks:
+    - hp/pro/sff_400_g9/boot/boot_from_usb.robot
+    - common/grub/stop/stop_at_grub.robot
+  live_image: true
+  wait_until_ssh: false
+  skip_download: true  # only needed rn for testing whilst the usb has the correct iso on it
+test_data: # example below
+  attachments:
+    - local: "config.json"
+      agent: "data/config/config.json"
+    - local: "images/ubuntu-logo.png"
+    - local: "scripts/my_test_script.sh"
+      agent: "script.sh"
+  test_cmds: |
+    # can use these
+    # $ZAPPER_IP
+    # $DEVICE_IP
+    ls -alR
+    cat attachments/test/data/config/config.json
+    chmod u+x attachments/test/script.sh
+    attachments/test/script.sh
