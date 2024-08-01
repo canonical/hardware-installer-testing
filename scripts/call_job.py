@@ -310,7 +310,8 @@ def main():
     ###################################################
     # in the future once c3 api is production ready this
     # may change - instead of using client id we may use dut id
-    client_ip = c3_get_machine_ip(args.client_id, c3_token)
+    # client_ip = c3_get_machine_ip(args.client_id, c3_token)
+    client_ip = "10.102.243.33"
     # dut_machine_id = c3_get_dut_machine_id(args.client_id, c3_token)
     # job_id = reserve_machine(dut_machine_id)
     connection = client_connect(client_ip)

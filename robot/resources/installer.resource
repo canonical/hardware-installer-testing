@@ -328,7 +328,7 @@ Wait For Install To Finish
 	BuiltIn.Sleep     3
 	Click LEFT Button
 	BuiltIn.Sleep     3
-	Match	${T}/remove-medium.png		1200
+	Match	${T}/remove-medium.png		2400
 	Unplug USB
 	${combo}	Create List		ENTER
 	Keys Combo		${combo}
@@ -484,38 +484,54 @@ OEM Wait For Reboot To Finish And Do GIS
 	#  A sleep here isn't great... but it should do, hopefully...
 	BuiltIn.Sleep	10
 	Restart Video Input
-	Match	${T}/gis-welcome.png		20
-	Move Pointer To	${T}/gis-next.png
+	Match	${T}/gis-welcome.png		300
+	Move Pointer To ${T}/gis-next.png
 	Click LEFT Button
+	Move Pointer To (100, 100)
 	Match	${T}/gis-typing.png		20
-	Move Pointer To	${T}/gis-next.png
+	Move Pointer To ${T}/gis-next.png
 	Click LEFT Button
+	Move Pointer To (100, 100)
+	Match	${T}/gis-network.png		20
+	Move Pointer To ${T}/gis-skip.png
+	Click LEFT Button
+	Move Pointer To (100, 100)
+	Match	${T}/gis-location-services.png		20
+	Move Pointer To ${T}/gis-next.png
+	Click LEFT Button
+	Move Pointer To (100, 100)
 	Match	${T}/gis-timezone.png		20
 	Move Pointer To ${T}/gis-timezone-search-cities.png
 	Click LEFT Button
+	Move Pointer To (100, 100)
     Type String     taipei
 	Match	${T}/gis-timezone-taipei.png	20
 	Move Pointer To ${T}/gis-timezone-taipei-taiwan.png
 	Click LEFT Button
-	Move Pointer To	${T}/gis-next.png
+	Move Pointer To (100, 100)
+	Move Pointer To ${T}/gis-next.png
 	Click LEFT Button
+	Move Pointer To (100, 100)
 	Match	${T}/gis-about-you.png		20
     Type String		ubuntu
 	Match	${T}/gis-about-you-user-data-filled.png		20
-	Move Pointer To	${T}/gis-next.png
+	Move Pointer To ${T}/gis-next.png
 	Click LEFT Button
+	Move Pointer To (100, 100)
 	Match	${T}/gis-set-password.png		20
     Type String		ubuntu
 	${combo}	Create List		TAB
 	Keys Combo		${combo}
 	Keys Combo		${combo}
     Type String		ubuntu
-	Move Pointer To	${T}/gis-next.png
+	Move Pointer To ${T}/gis-next.png
 	Click LEFT Button
+	Move Pointer To (100, 100)
 	Match	${T}/gis-done.png		20
-	Move Pointer To	${T}/gis-start-using-ubuntu.png
+	Move Pointer To ${T}/gis-start-using-ubuntu.png
 	Click LEFT Button
-	Match	${T}/noble-desktop-post-oem-install.png		30
+	Move Pointer To (100, 100)
+	Match	${T}/firefox-icon.png		30
 
 Select TPM FDE
     [Documentation] 	This slide assumes the disk is empty
