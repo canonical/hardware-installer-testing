@@ -5,6 +5,10 @@ Documentation       Shared resources for installer testing
 ${T}    ${CURDIR}
 
 *** Keywords ***
+Restart Stream
+	Restart Video Input
+	BuiltIn.Sleep		10
+
 Search
 	[Arguments]		${template}		${timeout}=10
 	[Documentation]		Kind of like "Optional Match"
@@ -12,9 +16,15 @@ Search
 	...		VIDEO.Match		${template}		${timeout}
 	[return]	${match}
 
+Grub Try Or Install
+	[Documentation]		Go through grub screen
+	Match	${T}/grub-try-or-install.png	20
+	${combo}	Create List		ENTER
+	Keys Combo		${combo}
+
 Select Language
 	[Documentation]		Select Language, we will default to English
-	Match	${T}/language.png	20
+	Match	${T}/language.png		180
 	Move Pointer To ${T}/next.png
 	BuiltIn.Sleep     3
 	Click LEFT Button
@@ -421,7 +431,7 @@ Try Or Install
 
 First Slide Test
 	[Documentation]		Select Language, we will default to English
-	Match	${T}/language.png	20
+	Match	${T}/language.png	180
 
 Manual Partitioning
 	[Documentation]		Manual partitioning, using whole disk

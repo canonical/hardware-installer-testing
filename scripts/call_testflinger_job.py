@@ -125,21 +125,43 @@ def load_testflinger_template(machine_id: str) -> str:
     return template_file.read_text()
 
 
+def get_robot_file_fp(job_config: dict):
+    return ROOT_DIR / "robot" / "suites" / job_config["suite"] / job_config["test"]
+
+
 def create_test_data_section(templates: List[pathlib.PosixPath],
                              resources: List[pathlib.PosixPath],
                              job_config_fp: str,
                              iso_url: str,
                              job_config: dict) -> str:
     test_data = "test_data:\n  attachments:\n"
+    robot_file = get_robot_file_fp(job_config)
+    test_data += f'    - local: "{robot_file}"\n      agent: "{robot_file}"\n'
     test_data += f'    - local: "scripts/call_job.py"\n      agent: "scripts/call_job.py"\n'
     test_data += f'    - local: "{job_config_fp}"\n      agent: "{job_config_fp}"\n'
     for template in templates:
         test_data += f'    - local: "{template}"\n      agent: "{template}"\n'
     for resource in resources:
         test_data += f'    - local: "{resource}"\n      agent: "{resource}"\n'
+    #########################################################################################
+    # need to also attach the robot file!!!
     test_data += "  test_cmds: |\n"
     test_data += f"    ls\n"
+    test_data += f"    echo '*********'\n"
     test_data += f"    cd attachments/test/\n"
+    test_data += f"    echo '*********'\n"
+    test_data += f"    pwd\n"
+    test_data += f"    echo '*********'\n"
+    test_data += f"    ls\n"
+    test_data += f"    echo '*********'\n"
+    test_data += f"    ls robot\n"
+    test_data += f"    echo '*********'\n"
+    test_data += f"    ls robot/templates\n"
+    test_data += f"    echo '*********'\n"
+    test_data += f"    ls robot/resources\n"
+    test_data += f"    echo '*********'\n"
+    test_data += f"    ls scripts\n"
+    test_data += f"    echo '*********'\n"
     test_data += f"    ./scripts/call_job.py --job-config {job_config_fp} --client-ip $ZAPPER_IP --output-dir ."
     test_data = test_data.replace("<url>", iso_url)
     return test_data
@@ -168,7 +190,8 @@ def main():
     machine_id = args.c3_machine_id
     testflinger_template = load_testflinger_template(machine_id)
     tf_data = write_complete_testflinger_yaml(testflinger_template, job_config, args.iso_url, args.job_config)
-    # print(tf_data)
+    print(tf_data)
+    job_id = None
     with tempfile.NamedTemporaryFile(
         suffix=".yaml", delete=True, dir="."
     ) as testflinger_file:
@@ -184,6 +207,12 @@ def main():
                     testflinger_file.name,
                 ]
             ):
+                searched = re.search(
+                    "job_id: (.*)\n", line
+                )
+                if searched is not None:
+                    job_id = searched.group(1)
+                    print("*" * 100 + f"\nJob id: {job_id}")
                 print(line, end="")
         except Exception as e:
             print(f"Testflinger submission failed with {e}")

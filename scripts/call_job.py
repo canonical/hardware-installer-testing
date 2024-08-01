@@ -280,13 +280,14 @@ def c3_get_dut_machine_id(client_id: str, access_token: str):
 def main():
     """Main function which runs the test specified in the job config"""
     args = parse_args()
-    c3_token = get_access_token(args.c3_client_id, args.c3_secret)
+    # c3_token = get_access_token(args.c3_client_id, args.c3_secret)
     ########################################################
     # actual job stuff
     job_config = load_config(args.job_config)
     robot_file = load_robot_file(job_config)
     templates = load_list_of_templates(job_config)
     local_resources = load_local_resources(job_config)
+    client_ip = args.client_ip
     # Collect variables and assets
     variables = {
         "KVM_RESOURCES": "snippets/common/common_kvm.resource",
@@ -299,7 +300,7 @@ def main():
     # in the future once c3 api is production ready this
     # may change - instead of using client id we may use dut id
     # client_ip = c3_get_machine_ip(args.client_id, c3_token)
-    client_ip = "10.102.243.33"
+    # client_ip = "10.102.243.33"
     # dut_machine_id = c3_get_dut_machine_id(args.client_id, c3_token)
     # job_id = reserve_machine(dut_machine_id)
     connection = client_connect(client_ip)

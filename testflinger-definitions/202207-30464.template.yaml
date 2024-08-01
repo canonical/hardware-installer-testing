@@ -4,7 +4,7 @@ provision_data:
   url: <url>
   robot_tasks:
     - hp/pro/sff_400_g9/boot/boot_from_usb.robot
-    - common/grub/stop/stop_at_grub.robot
+    # - common/grub/stop/stop_at_grub.robot
   live_image: true
   wait_until_ssh: false
   skip_download: true  # only needed rn for testing whilst the usb has the correct iso on it

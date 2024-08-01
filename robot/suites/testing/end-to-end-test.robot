@@ -7,5 +7,8 @@ Resource    ${CURDIR}/installer.resource
 ${T}    ${CURDIR}
 
 *** Test Cases ***
+Restart Stream
+    Restart Stream
+
 First Slide Test
     First Slide Test
