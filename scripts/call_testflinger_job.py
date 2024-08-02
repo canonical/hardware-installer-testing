@@ -1,71 +1,17 @@
 #!/usr/bin/python3
+"""
+Calls testflinger job to run installer test
+"""
 import argparse
-import pathlib
 import json
-import tempfile
-import subprocess
+import pathlib
 import re
-import os
+import subprocess
+import tempfile
 from typing import List
 
-
-# ROOT_DIR = pathlib.Path(os.path.dirname(os.path.realpath(__file__)) + "/..")
 ROOT_DIR = pathlib.Path("./")
-# INSTALLER_RESOURCE = ROOT_DIR / "robot" / "resources" / "installer.resource"
 RESOURCE_DIR = ROOT_DIR / "robot" / "resources"
-
-"""
-Need to also add step for grub
-Need to write a file like this:
----
-job_queue: 202207-30464
-provision_data:
-  url: https://releases.ubuntu.com/noble/ubuntu-24.04-desktop-amd64.iso
-  robot_tasks:
-    - hp/pro/sff_400_g9/boot/boot_from_usb.robot
-    - common/grub/stop/stop_at_grub.robot
-  live_image: true
-  wait_until_ssh: false
-  skip_download: true  # only needed rn for testing whilst the usb has the correct iso on it
-test_data: # example below
-  attachments:
-    - local: "config.json"
-      agent: "data/config/config.json"
-    - local: "images/ubuntu-logo.png"
-    - local: "scripts/my_test_script.sh"
-      agent: "script.sh"
-  test_cmds: |
-    # can use these
-    # $ZAPPER_IP
-    # $DEVICE_IP
-    ls -alR
-    cat attachments/test/data/config/config.json
-    chmod u+x attachments/test/script.sh
-    attachments/test/script.sh
-
-For attachments, can either attach each template and resource etc separately, or tar up locally but that involves creating tmp directory or something and seems kinda long
-
-Need a template for each machine? At least for the robot_tasks bit
-and then this script fills out the test_data section?
-test_cmds should be the same for each, so filled out by script
-
-So I need to:
-- create a template version of the above?
-- actually just embed in script?
-- needs to also copy the script which runs the test to the testflinger agent, so testflinger can run the script
-
-steps of this script:
-- takes job config
-- takes machine id as argument
-- writes full testflinger.yaml file to run job, including:
-  - all of the templates specified by the job config
-  - all of the resources specified by the job config
-- templates should go with the same full file path to make more compatible with call_job.py
-- same for resources
-
-I should refactor this too at some point as some functions will end up being shared
-
-"""
 
 
 def parse_args():
@@ -121,65 +67,84 @@ def load_local_resources(job_config: dict):
 
 
 def load_testflinger_template(machine_id: str) -> str:
-    template_file = ROOT_DIR / "testflinger-definitions" / f"{machine_id}.template.yaml"
+    """
+    Loads testflinger template
+    """
+    template_file = (
+        ROOT_DIR / "testflinger-definitions" / f"{machine_id}.template.yaml"
+    )
     return template_file.read_text()
 
 
 def get_robot_file_fp(job_config: dict):
-    return ROOT_DIR / "robot" / "suites" / job_config["suite"] / job_config["test"]
+    """
+    Gets the filepath for the robot file
+    """
+    return (
+        ROOT_DIR
+        / "robot"
+        / "suites"
+        / job_config["suite"]
+        / job_config["test"]
+    )
 
 
-def create_test_data_section(templates: List[pathlib.PosixPath],
-                             resources: List[pathlib.PosixPath],
-                             job_config_fp: str,
-                             iso_url: str,
-                             job_config: dict) -> str:
+def create_test_data_section(
+    templates: List[pathlib.PosixPath],
+    resources: List[pathlib.PosixPath],
+    job_config_fp: str,
+    iso_url: str,
+    job_config: dict,
+) -> str:
+    """
+    Creates the test data section for the full testflinger file for the job
+    """
     test_data = "test_data:\n  attachments:\n"
     robot_file = get_robot_file_fp(job_config)
     test_data += f'    - local: "{robot_file}"\n      agent: "{robot_file}"\n'
-    test_data += f'    - local: "scripts/call_job.py"\n      agent: "scripts/call_job.py"\n'
-    test_data += f'    - local: "{job_config_fp}"\n      agent: "{job_config_fp}"\n'
+    test_data += '    - local: "scripts/call_job.py"\n      agent: "scripts/call_job.py"\n'
+    test_data += (
+        f'    - local: "{job_config_fp}"\n      agent: "{job_config_fp}"\n'
+    )
     for template in templates:
         test_data += f'    - local: "{template}"\n      agent: "{template}"\n'
     for resource in resources:
         test_data += f'    - local: "{resource}"\n      agent: "{resource}"\n'
-    #########################################################################################
-    # need to also attach the robot file!!!
     test_data += "  test_cmds: |\n"
-    test_data += f"    mkdir artifacts\n"
-    test_data += f"    ls\n"
-    test_data += f"    echo '*********'\n"
-    test_data += f"    cd attachments/test/\n"
-    test_data += f"    echo '*********'\n"
-    test_data += f"    pwd\n"
-    test_data += f"    echo '*********'\n"
-    test_data += f"    ls\n"
-    test_data += f"    echo '*********'\n"
-    test_data += f"    ls robot\n"
-    test_data += f"    echo '*********'\n"
-    test_data += f"    ls robot/templates\n"
-    test_data += f"    echo '*********'\n"
-    test_data += f"    ls robot/resources\n"
-    test_data += f"    echo '*********'\n"
-    test_data += f"    ls scripts\n"
-    test_data += f"    echo '*********'\n"
-    test_data += f"    ./scripts/call_job.py --job-config {job_config_fp} --client-ip $ZAPPER_IP --output-dir .\n"
-    test_data += f"    mv *.html ../../artifacts/\n"
+    test_data += "    mkdir artifacts\n"
+    test_data += "    cd attachments/test/\n"
+    test_data += f"    ./scripts/call_job.py --job-config {job_config_fp} "
+    test_data += "--client-ip $ZAPPER_IP --output-dir .\n"
+    test_data += "    mv *.html ../../artifacts/\n"
     test_data = test_data.replace("<url>", iso_url)
     return test_data
 
 
-def write_complete_testflinger_yaml(template: str, job_config: dict, iso_url: str, job_config_fp: str) -> str:
+def write_complete_testflinger_yaml(
+    template: str, job_config: dict, iso_url: str, job_config_fp: str
+) -> str:
+    """
+    Takes the template file and appends the test_data section
+    """
     templates = load_list_of_templates(job_config)
     resources = load_local_resources(job_config)
-    test_data_section = create_test_data_section(templates, resources, job_config_fp, iso_url, job_config)
+    test_data_section = create_test_data_section(
+        templates, resources, job_config_fp, iso_url, job_config
+    )
     return f"{template}\n{test_data_section}"
 
 
 def execute(cmd):
-    popen = subprocess.Popen(cmd, stdout=subprocess.PIPE, universal_newlines=True)
+    """
+    Executes a subprocess command and yields the terminal
+    output line by line
+    """
+    # pylint: disable=R1732
+    popen = subprocess.Popen(
+        cmd, stdout=subprocess.PIPE, universal_newlines=True
+    )
     for stdout_line in iter(popen.stdout.readline, ""):
-        yield stdout_line 
+        yield stdout_line
     popen.stdout.close()
     return_code = popen.wait()
     if return_code:
@@ -187,11 +152,16 @@ def execute(cmd):
 
 
 def main():
+    """
+    Main function
+    """
     args = parse_args()
     job_config = load_config(args.job_config)
     machine_id = args.c3_machine_id
     testflinger_template = load_testflinger_template(machine_id)
-    tf_data = write_complete_testflinger_yaml(testflinger_template, job_config, args.iso_url, args.job_config)
+    tf_data = write_complete_testflinger_yaml(
+        testflinger_template, job_config, args.iso_url, args.job_config
+    )
     print(tf_data)
     job_id = None
     with tempfile.NamedTemporaryFile(
@@ -209,17 +179,16 @@ def main():
                     testflinger_file.name,
                 ]
             ):
-                searched = re.search(
-                    "job_id: (.*)\n", line
-                )
+                searched = re.search("job_id: (.*)\n", line)
                 if searched is not None:
                     job_id = searched.group(1)
                     print("*" * 100 + f"\nJob id: {job_id}")
                 print(line, end="")
+        # pylint: disable=W0718
         except Exception as e:
             print(f"Testflinger submission failed with {e}")
     print(job_id)
-    # need to add this too 
+    # need to add this too
     # testflinger artifacts 10372257-1e53-4807-961f-a03a4a95d3c2
     # to have the artifacts in jenkins
     # and in the jenkins job tar -xf the file, archive the html

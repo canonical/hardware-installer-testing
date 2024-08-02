@@ -3,31 +3,15 @@
 Calls a robot framework job from robot/suites and runs it on a client board hooked up to a DUT
 """
 import argparse
-import base64
 import json
 import os
 import pathlib
-import re
-import subprocess
-
-# import sys
-import tempfile
 import webbrowser
 
-import requests
-
-# import requests
 import rpyc
 
-# import time
-
-
 ROOT_DIR = pathlib.Path(os.path.dirname(os.path.realpath(__file__)) + "/..")
-# INSTALLER_RESOURCE = ROOT_DIR / "robot" / "resources" / "installer.resource"
 RESOURCE_DIR = ROOT_DIR / "robot" / "resources"
-# ugh, client machine id instead maybe?
-HOSTDATA_API = "https://certification.canonical.com/api/v2/hostdata/"
-MACHINE_API = "https://certification.canonical.com/api/v2/machines/"
 
 
 def parse_args():
@@ -63,40 +47,6 @@ def parse_args():
         action="store_true",
     )
     return parser.parse_args()
-
-
-def get_access_token(client_id, secret):
-    """
-    Generates an access token for c3
-    """
-    credential = base64.b64encode(
-        # "{0}:{1}".format(client_id, secret).encode("utf-8")
-        f"{client_id}:{secret}".encode("utf-8")
-    ).decode("utf-8")
-    headers = {
-        "Authorization": f"Basic {credential}",
-        "Content-Type": "application/x-www-form-urlencoded",
-    }
-    params = {"grant_type": "client_credentials", "scope": "read write"}
-    response = requests.post(
-        "https://certification.canonical.com/oauth2/token/",
-        headers=headers,
-        data=params,
-        timeout=30,
-    )
-    response.raise_for_status()
-    return response.json()["access_token"]
-
-
-def c3_query(access_token, url):
-    """
-    Function to query c3 api, provided by cert team
-    """
-    headers = {"Authorization": f"Bearer {access_token}"}
-    response = requests.get(url, headers=headers, timeout=30)
-    response.raise_for_status()
-    results = response.json()
-    return results
 
 
 def load_config(config_filepath):
@@ -159,130 +109,9 @@ def client_connect(client_ip: str):
     )
 
 
-# unused as of yet
-# def flash_usb(job_config: dict, variables: dict, connection: rpyc.Connection):
-#     """Flashes the USB connected to the client board with a specified iso"""
-#     robot_file = """*** Settings ***
-# Resource    ${USB_RESOURCES}
-
-# *** Variables ***
-# ${T}    ${CURDIR}
-
-# *** Test Cases ***
-# Flash Noble USB
-#     [Documentation] Flashes the USB with the Noble ISO
-#     Download and Provision via USB    """
-#     robot_file += job_config["iso-url"] + "\n"
-#     robot_file_bytes = str.encode(robot_file)
-#     status, html = connection.root.robot_run(robot_file_bytes, {}, variables)
-#     return status, html
-
-
-# doesn't work right now?!?!?!?!
-def reserve_machine(queue: str):
-    """Reserves the machine via testflinger"""
-    testflinger_config = f"""job_queue: {queue}
-reserve_data:
-  ssh_keys:
-    - lp:andersson123
-  timeout: 3600
-"""  # Change the ssh keys later on
-    # delete=False seems to be a hack required for using a tempfile with a subprocess
-    with tempfile.NamedTemporaryFile(
-        suffix=".yaml", delete=False, dir="."
-    ) as testflinger_file:
-        pathlib.Path(testflinger_file.name).write_text(
-            testflinger_config, encoding="utf-8"
-        )
-        try:
-            submission_output = subprocess.run(
-                [
-                    "testflinger",
-                    "submit",
-                    testflinger_file.name,
-                ],
-                check=True,
-                capture_output=True,
-                text=True,
-            )
-            job_id = re.search(
-                "job_id: (.*)\n", submission_output.stdout
-            ).group(1)
-            print("Submitting testflinger job succeeded")
-            testflinger_file.close()
-            return job_id
-        except subprocess.CalledProcessError as exc:
-            print(f"Submitting testflinger job failed with: {exc}")
-            testflinger_file.close()
-            return None
-
-
-def cancel_reservation(job_id: str):
-    """
-    Cancels the previous testflinger reservation - freeing up the machine for other tests
-    """
-    print(f"Cancelling reservation job with id: {job_id}")
-    subprocess.run(
-        [
-            "testflinger",
-            "cancel",
-            job_id,
-        ],
-        check=True,
-    )
-    print(f"Job {job_id} cancelled - machine is no longer reserved")
-
-
-def c3_get_machine_ip(machine_id: str, access_token: str):
-    """
-    Gets the ip address of a machine from c3 using its machine id
-    """
-    api_url = f"{HOSTDATA_API}{machine_id}/"
-    data = c3_query(access_token, api_url)
-    return data["ip_address"]
-
-
-def c3_get_dut_machine_id(client_id: str, access_token: str):
-    """
-    Gets the machine id of the DUT based on the client id
-    """
-    api_url = f"{MACHINE_API}{client_id}/"
-    data = c3_query(access_token, api_url)
-    return data["parent_canonical_id"]
-
-
-# unused as of yet
-# def check_ssh_connectivity(machine_ip: str):
-#     print(f"Checking connectivity to {machine_ip}")
-#     ssh_command = f"ssh ubuntu@{machine_ip} :"
-#     start = time.time()
-#     timeout = 60
-#     while (time.time() - start) < timeout:
-#         try:
-#             subprocess.run(
-#                 ssh_command.split(" "),
-#                 check=True,
-#             )
-#             return True
-#         except subprocess.CalledProcessError as _:
-#             print("ssh check failed")
-#     return False
-
-
-# unused as of yet
-# def run_remote_command(machine_ip: str, command: str):
-#     subprocess.run(
-#         f"ssh@{machine_ip} {command}".split(" "),
-#         check=True,
-#     )
-
-
 def main():
     """Main function which runs the test specified in the job config"""
     args = parse_args()
-    # c3_token = get_access_token(args.c3_client_id, args.c3_secret)
-    ########################################################
-    # actual job stuff
     job_config = load_config(args.job_config)
     robot_file = load_robot_file(job_config)
     templates = load_list_of_templates(job_config)
@@ -294,32 +123,15 @@ def main():
         "USB_RESOURCES": "resources/usb_disk.resource",
     }
     assets = gather_test_assets(templates, local_resources)
-    ########################################################
-    # Set up client connection
-    ###################################################
-    # in the future once c3 api is production ready this
-    # may change - instead of using client id we may use dut id
-    # client_ip = c3_get_machine_ip(args.client_id, c3_token)
-    # client_ip = "10.102.243.33"
-    # dut_machine_id = c3_get_dut_machine_id(args.client_id, c3_token)
-    # job_id = reserve_machine(dut_machine_id)
     connection = client_connect(client_ip)
 
-    # dut_ip = get_machine_ip(dut_machine_id, c3_token)
-    # print(client_ip)
-    # print(dut_machine_id)
-    # print(dut_ip)
-    ###################################################
-    # run the actual job
     status, html = connection.root.robot_run(robot_file, assets, variables)
     print(status)
     print("installer job finished")
     output_html = pathlib.Path(f"{args.output_dir}/client-install-test.html")
     output_html.write_text(html, encoding="utf-8")
-    # cancel_reservation(job_id)
     if args.interactive:
         webbrowser.open(str(output_html))
-    ###################################################
 
 
 if __name__ == "__main__":

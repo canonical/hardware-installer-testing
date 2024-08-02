@@ -7,4 +7,4 @@ provision_data:
     # - common/grub/stop/stop_at_grub.robot
   live_image: true
   wait_until_ssh: false
-  skip_download: true  # only needed rn for testing whilst the usb has the correct iso on it
+  skip_download: true  # when the usb has the correct iso on it
