@@ -568,5 +568,6 @@ TPM Recovery Key Slide
 	BuiltIn.Sleep    10
 
 Exit Installer
+	Match	${T}/exit-installer.png		180
     Move Pointer To ${T}/exit-installer.png
     Click LEFT Button

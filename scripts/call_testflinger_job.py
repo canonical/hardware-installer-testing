@@ -146,6 +146,7 @@ def create_test_data_section(templates: List[pathlib.PosixPath],
     #########################################################################################
     # need to also attach the robot file!!!
     test_data += "  test_cmds: |\n"
+    test_data += f"    mkdir artifacts\n"
     test_data += f"    ls\n"
     test_data += f"    echo '*********'\n"
     test_data += f"    cd attachments/test/\n"
@@ -162,7 +163,8 @@ def create_test_data_section(templates: List[pathlib.PosixPath],
     test_data += f"    echo '*********'\n"
     test_data += f"    ls scripts\n"
     test_data += f"    echo '*********'\n"
-    test_data += f"    ./scripts/call_job.py --job-config {job_config_fp} --client-ip $ZAPPER_IP --output-dir ."
+    test_data += f"    ./scripts/call_job.py --job-config {job_config_fp} --client-ip $ZAPPER_IP --output-dir .\n"
+    test_data += f"    mv *.html ../../artifacts/\n"
     test_data = test_data.replace("<url>", iso_url)
     return test_data
 
@@ -216,6 +218,11 @@ def main():
                 print(line, end="")
         except Exception as e:
             print(f"Testflinger submission failed with {e}")
+    print(job_id)
+    # need to add this too 
+    # testflinger artifacts 10372257-1e53-4807-961f-a03a4a95d3c2
+    # to have the artifacts in jenkins
+    # and in the jenkins job tar -xf the file, archive the html
 
 
 if __name__ == "__main__":
