@@ -5,6 +5,12 @@ Documentation       Shared resources for installer testing
 ${T}    ${CURDIR}
 
 *** Keywords ***
+EzClick
+	BuiltIn.Sleep     3
+	Click LEFT Button
+	BuiltIn.Sleep     3
+	Move Pointer To (100, 100)
+
 Restart Stream
 	Restart Video Input
 	BuiltIn.Sleep		10
@@ -432,6 +438,7 @@ Try Or Install
 First Slide Test
 	[Documentation]		Select Language, we will default to English
 	Match	${T}/language.png	180
+	EzClick
 
 Manual Partitioning
 	[Documentation]		Manual partitioning, using whole disk
@@ -484,6 +491,7 @@ Update Installer
 	BuiltIn.Sleep     3
 	Click LEFT Button
 	BuiltIn.Sleep     3
+	Move Pointer To (100, 100)
 
 Open Installer
 	Move Pointer To ${T}/installer-icon.png
