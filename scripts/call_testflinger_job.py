@@ -93,7 +93,6 @@ def create_test_data_section(
     templates: List[pathlib.PosixPath],
     resources: List[pathlib.PosixPath],
     job_config_fp: str,
-    iso_url: str,
     job_config: dict,
 ) -> str:
     """
@@ -116,7 +115,6 @@ def create_test_data_section(
     test_data += f"    ./scripts/call_job.py --job-config {job_config_fp} "
     test_data += "--client-ip $ZAPPER_IP --output-dir .\n"
     test_data += "    mv *.html ../../artifacts/\n"
-    test_data = test_data.replace("<url>", iso_url)
     return test_data
 
 
@@ -129,8 +127,9 @@ def write_complete_testflinger_yaml(
     templates = load_list_of_templates(job_config)
     resources = load_local_resources(job_config)
     test_data_section = create_test_data_section(
-        templates, resources, job_config_fp, iso_url, job_config
+        templates, resources, job_config_fp, job_config
     )
+    template = template.replace("<url>", iso_url)
     return f"{template}\n{test_data_section}"
 
 
@@ -151,6 +150,43 @@ def execute(cmd):
         raise subprocess.CalledProcessError(return_code, cmd)
 
 
+def gather_artifacts(job_id: str) -> None:
+    """
+    Gathers the artifacts from the job run using:
+    testflinger artifacts <job_id>
+    and then untars them.
+    """
+    try:
+        gather = subprocess.run(
+            [
+                "testflinger",
+                "artifacts",
+                job_id,
+            ],
+            check=True,
+            capture_output=True,
+        )
+        print(f"Artifacts gathered: \n{gather.stdout}")
+    except subprocess.CalledProcessError as e:
+        print(f"Failed to gather artifacts with {e}")
+    try:
+        untar = subprocess.run(
+            [
+                "tar",
+                "-xf",
+                "artifacts.tgz",
+            ],
+            check=True,
+            capture_output=True,
+        )
+        print(f"{untar.stdout.decode('utf-8')}")
+        print(
+            "un-tar'd artifacts - they now exist in the artifacts/ directory"
+        )
+    except subprocess.CalledProcessError as e:
+        print(f"Failed to untar artifacts with {e}")
+
+
 def main():
     """
     Main function
@@ -162,7 +198,6 @@ def main():
     tf_data = write_complete_testflinger_yaml(
         testflinger_template, job_config, args.iso_url, args.job_config
     )
-    print(tf_data)
     job_id = None
     with tempfile.NamedTemporaryFile(
         suffix=".yaml", delete=True, dir="."
@@ -188,10 +223,9 @@ def main():
         except Exception as e:
             print(f"Testflinger submission failed with {e}")
     print(job_id)
-    # need to add this too
-    # testflinger artifacts 10372257-1e53-4807-961f-a03a4a95d3c2
-    # to have the artifacts in jenkins
+    gather_artifacts(job_id)
     # and in the jenkins job tar -xf the file, archive the html
+    # artifacts/*
 
 
 if __name__ == "__main__":

@@ -1,9 +1,9 @@
 ---
-job_queue: 202207-30464
+job_queue: 202101-28611
 provision_data:
   url: <url>
   robot_tasks:
-    - hp/pro/sff_400_g9/boot/boot_from_usb.robot
+    - dell/optiplex/5090/boot/boot_from_usb.robot
   live_image: true
   wait_until_ssh: false
   skip_download: true  # when the usb already has the correct iso on it

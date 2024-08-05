@@ -1,6 +1,0 @@
----
-job_queue: 202303-31314
-reserve_data:
-  ssh_keys:
-    - lp:andersson123
-  timeout: 3600
