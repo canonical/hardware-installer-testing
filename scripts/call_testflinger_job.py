@@ -167,8 +167,8 @@ def gather_artifacts(job_id: str) -> None:
             capture_output=True,
         )
         print(f"Artifacts gathered: \n{gather.stdout}")
-    except subprocess.CalledProcessError as e:
-        print(f"Failed to gather artifacts with {e}")
+    except subprocess.CalledProcessError as gather_error:
+        print(f"Failed to gather artifacts with {gather_error}")
     try:
         untar = subprocess.run(
             [
@@ -183,8 +183,8 @@ def gather_artifacts(job_id: str) -> None:
         print(
             "un-tar'd artifacts - they now exist in the artifacts/ directory"
         )
-    except subprocess.CalledProcessError as e:
-        print(f"Failed to untar artifacts with {e}")
+    except subprocess.CalledProcessError as untar_error:
+        print(f"Failed to untar artifacts with {untar_error}")
 
 
 def main():
@@ -219,13 +219,11 @@ def main():
                     job_id = searched.group(1)
                     print("*" * 100 + f"\nJob id: {job_id}")
                 print(line, end="")
-        # pylint: disable=W0718
-        except Exception as e:
-            print(f"Testflinger submission failed with {e}")
+        # pylint: disable=C0103,W0703
+        except Exception as submission_error:
+            print(f"Testflinger submission failed with: {submission_error}")
     print(job_id)
     gather_artifacts(job_id)
-    # and in the jenkins job tar -xf the file, archive the html
-    # artifacts/*
 
 
 if __name__ == "__main__":
