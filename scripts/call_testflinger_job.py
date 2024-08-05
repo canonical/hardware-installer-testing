@@ -112,6 +112,8 @@ def create_test_data_section(
     test_data += "  test_cmds: |\n"
     test_data += "    mkdir artifacts\n"
     test_data += "    cd attachments/test/\n"
+    test_data += "    echo You can view the stream of the test here:\n"
+    test_data += '    echo "http://${ZAPPER_IP}:60010/stream"\n'
     test_data += f"    ./scripts/call_job.py --job-config {job_config_fp} "
     test_data += "--client-ip $ZAPPER_IP --output-dir .\n"
     test_data += "    mv *.html ../../artifacts/\n"
