@@ -110,7 +110,7 @@ def create_test_data_section(
     for resource in resources:
         test_data += f'    - local: "{resource}"\n      agent: "{resource}"\n'
     test_data += "  test_cmds: |\n"
-    test_data += "    mkdir artifacts\n"
+    test_data += "    mkdir -p artifacts/logs/\n"
     test_data += "    cd attachments/test/\n"
     test_data += "    echo You can view the stream of the test here:\n"
     test_data += '    echo "http://${ZAPPER_IP}:60010/stream"\n'
@@ -118,8 +118,13 @@ def create_test_data_section(
     test_data += "--client-ip $ZAPPER_IP --output-dir .\n"
     test_data += "    mv *.html ../../artifacts/\n"
     # maybe I need to move the file under home first?
-    # test_data += "    scp ubuntu@$DUT_IP:/var/log/installer/ubuntu_desktop_installer.log
-    # ../../artifacts/\n"
+    # copy the desktop installer log
+    test_data += "    scp ubuntu@$DUT_IP:/var/log/installer/* "
+    test_data += "../../artifacts/logs/\n"
+    test_data += (
+        "    ssh ubuntu@$DUT_IP journalctl -b 0 --no-pager > journalctl.log"
+    )
+    test_data += "    scp ubuntu@$DUT_IP:/home/ubuntu/journalctl.log ../../artifacts/logs/\n"
     return test_data
 
 
