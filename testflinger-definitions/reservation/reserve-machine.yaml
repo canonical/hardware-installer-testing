@@ -1,5 +1,5 @@
 ---
-job_queue: <queue-id>
+job_queue: 202112-29792
 reserve_data:
   ssh_keys:
     - lp:andersson123

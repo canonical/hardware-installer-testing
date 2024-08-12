@@ -6,6 +6,7 @@ import argparse
 import json
 import os
 import pathlib
+import sys
 import webbrowser
 
 import rpyc
@@ -132,6 +133,7 @@ def main():
     output_html.write_text(html, encoding="utf-8")
     if args.interactive:
         webbrowser.open(str(output_html))
+    sys.exit(0 if status else 1)
 
 
 if __name__ == "__main__":
