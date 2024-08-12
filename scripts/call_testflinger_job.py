@@ -117,6 +117,9 @@ def create_test_data_section(
     test_data += f"    ./scripts/call_job.py --job-config {job_config_fp} "
     test_data += "--client-ip $ZAPPER_IP --output-dir .\n"
     test_data += "    mv *.html ../../artifacts/\n"
+    # maybe I need to move the file under home first?
+    # test_data += "    scp ubuntu@$DUT_IP:/var/log/installer/ubuntu_desktop_installer.log
+    # ../../artifacts/\n"
     return test_data
 
 

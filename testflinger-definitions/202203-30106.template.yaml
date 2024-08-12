@@ -3,7 +3,7 @@ job_queue: 202203-30106
 provision_data:
   url: <url>
   robot_tasks:
-    - dell/precision/7865/boot_from_usb.robot
+    - dell/precision/7865/boot/boot_from_usb.robot
   live_image: true
   wait_until_ssh: false
   skip_download: true  # when the usb already has the correct iso on it
