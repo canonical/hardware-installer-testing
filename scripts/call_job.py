@@ -127,7 +127,7 @@ def main():
     connection = client_connect(client_ip)
 
     status, html = connection.root.robot_run(robot_file, assets, variables)
-    print(status)
+    print("RESULT=PASS" if status else "RESULT=FAIL")
     print("installer job finished")
     output_html = pathlib.Path(f"{args.output_dir}/client-install-test.html")
     output_html.write_text(html, encoding="utf-8")

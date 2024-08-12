@@ -7,6 +7,7 @@ import json
 import pathlib
 import re
 import subprocess
+import sys
 import tempfile
 from typing import List
 
@@ -110,6 +111,7 @@ def create_test_data_section(
     for resource in resources:
         test_data += f'    - local: "{resource}"\n      agent: "{resource}"\n'
     test_data += "  test_cmds: |\n"
+    test_data += "    set -e"
     test_data += "    mkdir -p artifacts/logs/\n"
     test_data += "    cd attachments/test/\n"
     test_data += "    echo You can view the stream of the test here:\n"
@@ -176,7 +178,7 @@ def gather_artifacts(job_id: str) -> None:
             check=True,
             capture_output=True,
         )
-        print(f"Artifacts gathered: \n{gather.stdout}")
+        print(f"Artifacts gathered: \n{gather.stdout.decode('utf-8')}")
     except subprocess.CalledProcessError as gather_error:
         print(f"Failed to gather artifacts with {gather_error}")
     try:
@@ -209,6 +211,7 @@ def main():
         testflinger_template, job_config, args.iso_url, args.job_config
     )
     job_id = None
+    result = None
     with tempfile.NamedTemporaryFile(
         suffix=".yaml", delete=True, dir="."
     ) as testflinger_file:
@@ -225,6 +228,10 @@ def main():
                 ]
             ):
                 searched = re.search("job_id: (.*)\n", line)
+                if "RESULT=PASS" in line:
+                    result = True
+                elif "RESULT=FAIL" in line:
+                    result = False
                 if searched is not None:
                     job_id = searched.group(1)
                     print("*" * 100 + f"\nJob id: {job_id}")
@@ -234,6 +241,7 @@ def main():
             print(f"Testflinger submission failed with: {submission_error}")
     print(job_id)
     gather_artifacts(job_id)
+    sys.exit(0 if result else 1)
 
 
 if __name__ == "__main__":
