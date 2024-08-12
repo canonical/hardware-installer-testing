@@ -111,7 +111,7 @@ def create_test_data_section(
     for resource in resources:
         test_data += f'    - local: "{resource}"\n      agent: "{resource}"\n'
     test_data += "  test_cmds: |\n"
-    test_data += "    set -e"
+    test_data += "    set -e\n"
     test_data += "    mkdir -p artifacts/logs/\n"
     test_data += "    cd attachments/test/\n"
     test_data += "    echo You can view the stream of the test here:\n"
