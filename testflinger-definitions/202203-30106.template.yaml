@@ -6,4 +6,4 @@ provision_data:
     - dell/precision/7865/boot/boot_from_usb.robot
   live_image: true
   wait_until_ssh: false
-  skip_download: true  # when the usb already has the correct iso on it
+  # skip_download: true  # when the usb already has the correct iso on it
