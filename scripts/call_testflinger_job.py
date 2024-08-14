@@ -67,13 +67,23 @@ def load_local_resources(job_config: dict):
     return resources
 
 
-def load_testflinger_template(machine_id: str) -> str:
+def load_testflinger_template(machine_id: str, job_config: dict) -> str:
     """
     Loads testflinger template
     """
-    template_file = (
-        ROOT_DIR / "testflinger-definitions" / f"{machine_id}.template.yaml"
-    )
+    if "tpm-fde" in job_config["test"]:
+        template_file = (
+            ROOT_DIR
+            / "testflinger-definitions"
+            / "tpm-fde"
+            / f"{machine_id}.template.yaml"
+        )
+    else:
+        template_file = (
+            ROOT_DIR
+            / "testflinger-definitions"
+            / f"{machine_id}.template.yaml"
+        )
     return template_file.read_text()
 
 
@@ -208,7 +218,7 @@ def main():
     args = parse_args()
     job_config = load_config(args.job_config)
     machine_id = args.c3_machine_id
-    testflinger_template = load_testflinger_template(machine_id)
+    testflinger_template = load_testflinger_template(machine_id, job_config)
     tf_data = write_complete_testflinger_yaml(
         testflinger_template, job_config, args.iso_url, args.job_config
     )

@@ -1,0 +1,11 @@
+---
+job_queue: 202207-30464
+provision_data:
+  url: <url>
+  robot_tasks:
+    - hp/pro/sff_400_g9/secure_boot/enable.robot
+    - hp/pro/sff_400_g9/tpm/clear_tpm.robot
+    - hp/pro/sff_400_g9/boot/boot_from_usb.robot
+  live_image: true
+  wait_until_ssh: false
+  # skip_download: true  # when the usb already has the correct iso on it
