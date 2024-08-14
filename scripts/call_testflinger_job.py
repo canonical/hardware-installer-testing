@@ -123,10 +123,12 @@ def create_test_data_section(
     # copy the desktop installer log
     test_data += "    scp ubuntu@$DUT_IP:/var/log/installer/* "
     test_data += "../../artifacts/logs/\n"
+    test_data += "    echo 'copied installer stuff to logs'"
     test_data += (
         "    ssh ubuntu@$DUT_IP journalctl -b 0 --no-pager > journalctl.log"
     )
     test_data += "    scp ubuntu@$DUT_IP:/home/ubuntu/journalctl.log ../../artifacts/logs/\n"
+    test_data += "    echo 'copied journalctl stuff to logs'"
     return test_data
 
 
