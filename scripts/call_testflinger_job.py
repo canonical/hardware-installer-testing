@@ -127,18 +127,7 @@ def create_test_data_section(
     test_data += "    echo You can view the stream of the test here:\n"
     test_data += '    echo "http://${ZAPPER_IP}:60010/stream"\n'
     test_data += f"    ./scripts/call_job.py --job-config {job_config_fp} "
-    test_data += "--client-ip $ZAPPER_IP --output-dir .\n"
-    test_data += "    mv *.html ../../artifacts/\n"
-    # maybe I need to move the file under home first?
-    # copy the desktop installer log
-    test_data += "    scp ubuntu@$DUT_IP:/var/log/installer/* "
-    test_data += "../../artifacts/logs/\n"
-    test_data += "    echo 'copied installer stuff to logs'"
-    test_data += (
-        "    ssh ubuntu@$DUT_IP journalctl -b 0 --no-pager > journalctl.log"
-    )
-    test_data += "    scp ubuntu@$DUT_IP:/home/ubuntu/journalctl.log ../../artifacts/logs/\n"
-    test_data += "    echo 'copied journalctl stuff to logs'"
+    test_data += "--client-ip $ZAPPER_IP --output-dir ../../artifacts/\n"
     return test_data
 
 

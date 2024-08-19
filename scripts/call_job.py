@@ -4,12 +4,16 @@ Calls a robot framework job from robot/suites and runs it on a client board hook
 """
 import argparse
 import json
+import logging
 import os
 import pathlib
 import sys
 import webbrowser
 
+import paramiko
 import rpyc
+
+logging.basicConfig(level="INFO")
 
 ROOT_DIR = pathlib.Path(os.path.dirname(os.path.realpath(__file__)) + "/..")
 RESOURCE_DIR = ROOT_DIR / "robot" / "resources"
@@ -52,6 +56,7 @@ def parse_args():
 
 def load_config(config_filepath):
     """Loads the specified json config"""
+    logging.info("Loading job config...")
     config_file = pathlib.Path(config_filepath).read_text(encoding="utf-8")
     config_json = json.loads(config_file)
     return config_json
@@ -59,6 +64,7 @@ def load_config(config_filepath):
 
 def load_robot_file(job_config: dict):
     """Loads the robot file specified in the job config"""
+    logging.info(f"Loading specified robot file {job_config['test']}")
     return (
         ROOT_DIR
         / "robot"
@@ -70,6 +76,7 @@ def load_robot_file(job_config: dict):
 
 def load_list_of_templates(job_config: dict):
     """Loads the list of templates as specified in the job config"""
+    logging.info(f"Loading templates: {', '.join(job_config['templates'])}")
     templates = []
     for template in job_config["templates"]:
         template_dir = (ROOT_DIR / "robot" / "templates" / template).glob("*")
@@ -79,6 +86,7 @@ def load_list_of_templates(job_config: dict):
 
 def load_local_resources(job_config: dict):
     """Loads any Robot Framework 'resources' as specified in the job config"""
+    logging.info(f"Loading resources: {', '.join(job_config['resources'])}")
     resources = []
     for resource in job_config["resources"]:
         resources.append(RESOURCE_DIR / resource)
@@ -91,8 +99,14 @@ def gather_test_assets(templates: list, resources: list):
     test - this includes templates and resources
     """
     assets = {}
+    logging.info(
+        f"Gathering the following list of assets: {', '.join(templates)}"
+    )
     for template in templates:
         assets[os.path.basename(str(template))] = template.read_bytes()
+    logging.info(
+        f"Gathering the following list of resources: {', '.join(resources)}"
+    )
     for resource in resources:
         assets[os.path.basename(str(resource))] = resource.read_bytes()
     return assets
@@ -100,6 +114,7 @@ def gather_test_assets(templates: list, resources: list):
 
 def client_connect(client_ip: str):
     """Connects to the specified client board"""
+    logging.info(f"Connecting to {client_ip}")
     return rpyc.connect(
         client_ip,
         60000,
@@ -107,6 +122,62 @@ def client_connect(client_ip: str):
             "allow_public_attrs": True,
             "sync_request_timeout": 2400,
         },
+    )
+
+
+def run_paramiko_command(ssh_client: paramiko.SSHClient, command: str) -> str:
+    """Runs a command via paramiko"""
+    logging.info(f"Running the following command via paramiko:\n{command}")
+    stdin, stdout, _ = ssh_client.exec_command(command)  # the _ is stderr
+    stdin.close()
+    return stdout.read().decode("utf-8")
+
+
+def copy_logs(dut_ip: str, output_dir: str):
+    """
+    Copies logs under /var/log/installer/ and a journalctl
+    snippet from the DUT to the testflinger agent/host machine
+    """
+    logging.info("Collecting logs from DUT")
+    username = "ubuntu"
+    password = "ubuntu"
+    logging.info(f"Setting up paramiko connection to {dut_ip}")
+    ssh_client = paramiko.SSHClient()
+    ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh_client.connect(hostname=dut_ip, username=username, password=password)
+    logging.info("paramiko connection set up!")
+    command = (
+        """python3 -c 'import os; result = [os.path.join(dp, f) for dp, dn, """
+        + """filenames in os.walk("/var/log/installer/") for f in filenames]; """
+        + """print(" ".join(result));'"""
+    )
+    stdout = run_paramiko_command(ssh_client=ssh_client, command=command)
+    files = stdout.replace("\n", "").split(" ")
+    command = "mkdir -p /tmp/installer-logs/"
+    run_paramiko_command(ssh_client=ssh_client, command=command)
+    logging.info("Copying files under / to /tmp/")
+    for file in files:
+        file_name = file.split("/")[-1]
+        command = f"echo {password} | sudo -S cat {file} > /tmp/installer-logs/{file_name}"
+        run_paramiko_command(ssh_client=ssh_client, command=command)
+    logging.info("Done copying files")
+    logging.info("Copying files from DUT to host machine")
+    ftp_client = ssh_client.open_sftp()
+    for file in files:
+        file_name = file.split("/")[-1]
+        logging.info(f"Copying {file_name}")
+        ftp_client.get(
+            f"/tmp/installer-logs/{file_name}", f"{output_dir}/{file_name}"
+        )
+    ftp_client.close()
+    logging.info("Cleaning up temporary directory on DUT")
+    command = "rm -r /tmp/installer-logs/"
+    run_paramiko_command(ssh_client=ssh_client, command=command)
+    logging.info("Done copying logs - now gathering journalctl snippet")
+    command = "journalctl -b 0 --no-pager"
+    jrnl_output = run_paramiko_command(ssh_client=ssh_client, command=command)
+    pathlib.Path(f"{output_dir}/journalctl-b-0.log").write_text(
+        jrnl_output, encoding="utf-8"
     )
 
 
@@ -133,6 +204,7 @@ def main():
     output_html.write_text(html, encoding="utf-8")
     if args.interactive:
         webbrowser.open(str(output_html))
+    copy_logs(args.client_ip, args.output_dir)
     sys.exit(0 if status else 1)
 
 
