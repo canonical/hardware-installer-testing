@@ -4,12 +4,15 @@ Calls testflinger job to run installer test
 """
 import argparse
 import json
+import logging
 import pathlib
 import re
 import subprocess
 import sys
 import tempfile
 from typing import List
+
+logging.basicConfig(level="INFO")
 
 ROOT_DIR = pathlib.Path("./")
 RESOURCE_DIR = ROOT_DIR / "robot" / "resources"
@@ -45,6 +48,7 @@ def parse_args():
 
 def load_config(config_filepath: str) -> dict:
     """Loads the specified json config"""
+    logging.info(f"Loading json job config: {config_filepath}")
     config_file = pathlib.Path(config_filepath).read_text(encoding="utf-8")
     config_json = json.loads(config_file)
     return config_json
@@ -52,6 +56,9 @@ def load_config(config_filepath: str) -> dict:
 
 def load_list_of_templates(job_config: dict):
     """Loads the list of templates as specified in the job config"""
+    logging.info(
+        f"Loading list of templates: {', '.join(job_config['templates'])}"
+    )
     templates = []
     for template in job_config["templates"]:
         template_dir = (ROOT_DIR / "robot" / "templates" / template).glob("*")
@@ -61,6 +68,9 @@ def load_list_of_templates(job_config: dict):
 
 def load_local_resources(job_config: dict):
     """Loads any Robot Framework 'resources' as specified in the job config"""
+    logging.info(
+        f"Loading local resources: {', '.join(job_config['resources'])}"
+    )
     resources = []
     for resource in job_config["resources"]:
         resources.append(RESOURCE_DIR / resource)
@@ -71,6 +81,7 @@ def load_testflinger_template(machine_id: str, job_config: dict) -> str:
     """
     Loads testflinger template
     """
+    logging.info(f"Loading testflinger template for {machine_id}")
     if "tpm-fde" in job_config["test"]:
         template_file = (
             ROOT_DIR
@@ -109,6 +120,7 @@ def create_test_data_section(
     """
     Creates the test data section for the full testflinger file for the job
     """
+    logging.info("Creating test data section for testflinger yaml file")
     test_data = "test_data:\n  attachments:\n"
     robot_file = get_robot_file_fp(job_config)
     test_data += f'    - local: "{robot_file}"\n      agent: "{robot_file}"\n'
@@ -121,7 +133,7 @@ def create_test_data_section(
     for resource in resources:
         test_data += f'    - local: "{resource}"\n      agent: "{resource}"\n'
     test_data += "  test_cmds: |\n"
-    # test_data += "    set -e\n"
+    test_data += "    set -e\n"
     test_data += "    mkdir -p artifacts/logs/\n"
     test_data += "    cd attachments/test/\n"
     test_data += "    echo You can view the stream of the test here:\n"
@@ -137,20 +149,25 @@ def write_complete_testflinger_yaml(
     """
     Takes the template file and appends the test_data section
     """
+    logging.info("Creating full testflinger yaml file")
     templates = load_list_of_templates(job_config)
     resources = load_local_resources(job_config)
     test_data_section = create_test_data_section(
         templates, resources, job_config_fp, job_config
     )
     template = template.replace("<url>", iso_url)
+    logging.info(
+        f"Created full testflinger yaml file:\n{template}\n{test_data_section}"
+    )
     return f"{template}\n{test_data_section}"
 
 
-def execute(cmd):
+def execute(cmd: List[str]):
     """
     Executes a subprocess command and yields the terminal
     output line by line
     """
+    logging.info(f"Executing {' '.join(cmd)} as subprocess")
     # pylint: disable=R1732
     popen = subprocess.Popen(
         cmd, stdout=subprocess.PIPE, universal_newlines=True
@@ -169,6 +186,7 @@ def gather_artifacts(job_id: str) -> None:
     testflinger artifacts <job_id>
     and then untars them.
     """
+    logging.info("Gathering testflinger artifacts...")
     try:
         gather = subprocess.run(
             [
@@ -179,11 +197,11 @@ def gather_artifacts(job_id: str) -> None:
             check=True,
             capture_output=True,
         )
-        print(f"Artifacts gathered: \n{gather.stdout.decode('utf-8')}")
+        logging.info(f"Artifacts gathered: \n{gather.stdout.decode('utf-8')}")
     except subprocess.CalledProcessError as gather_error:
-        print(f"Failed to gather artifacts with {gather_error}")
+        logging.error(f"Failed to gather artifacts with {gather_error}")
     try:
-        untar = subprocess.run(
+        _ = subprocess.run(
             [
                 "tar",
                 "-xf",
@@ -192,12 +210,11 @@ def gather_artifacts(job_id: str) -> None:
             check=True,
             capture_output=True,
         )
-        print(f"{untar.stdout.decode('utf-8')}")
-        print(
+        logging.info(
             "un-tar'd artifacts - they now exist in the artifacts/ directory"
         )
     except subprocess.CalledProcessError as untar_error:
-        print(f"Failed to untar artifacts with {untar_error}")
+        logging.error(f"Failed to untar artifacts with {untar_error}")
 
 
 def main():
@@ -235,12 +252,14 @@ def main():
                     result = False
                 if searched is not None:
                     job_id = searched.group(1)
-                    print("*" * 100 + f"\nJob id: {job_id}")
+                    logging.info(
+                        "********************************************"
+                    )
+                    print(f"Job id: {job_id}")
                 print(line, end="")
         # pylint: disable=C0103,W0703
         except Exception as submission_error:
             print(f"Testflinger submission failed with: {submission_error}")
-    print(job_id)
     gather_artifacts(job_id)
     sys.exit(0 if result else 1)
 
