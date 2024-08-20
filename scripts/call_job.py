@@ -76,7 +76,7 @@ def load_robot_file(job_config: dict):
 
 def load_list_of_templates(job_config: dict):
     """Loads the list of templates as specified in the job config"""
-    logging.info(f"Loading templates: {', '.join(job_config['templates'])}")
+    logging.info("Loading templates")
     templates = []
     for template in job_config["templates"]:
         template_dir = (ROOT_DIR / "robot" / "templates" / template).glob("*")
@@ -86,7 +86,7 @@ def load_list_of_templates(job_config: dict):
 
 def load_local_resources(job_config: dict):
     """Loads any Robot Framework 'resources' as specified in the job config"""
-    logging.info(f"Loading resources: {', '.join(job_config['resources'])}")
+    logging.info("Loading resources")
     resources = []
     for resource in job_config["resources"]:
         resources.append(RESOURCE_DIR / resource)
@@ -99,14 +99,10 @@ def gather_test_assets(templates: list, resources: list):
     test - this includes templates and resources
     """
     assets = {}
-    logging.info(
-        f"Gathering the following list of assets: {', '.join(templates)}"
-    )
+    logging.info("Gathering templates")
     for template in templates:
         assets[os.path.basename(str(template))] = template.read_bytes()
-    logging.info(
-        f"Gathering the following list of resources: {', '.join(resources)}"
-    )
+    logging.info("Gathering resources")
     for resource in resources:
         assets[os.path.basename(str(resource))] = resource.read_bytes()
     return assets
@@ -127,7 +123,7 @@ def client_connect(client_ip: str):
 
 def run_paramiko_command(ssh_client: paramiko.SSHClient, command: str) -> str:
     """Runs a command via paramiko"""
-    logging.info(f"Running the following command via paramiko:\n{command}")
+    logging.info(f"Running the following command via paramiko: {command}")
     stdin, stdout, _ = ssh_client.exec_command(command)  # the _ is stderr
     stdin.close()
     return stdout.read().decode("utf-8")
