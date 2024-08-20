@@ -138,6 +138,7 @@ def create_test_data_section(
     test_data += "    cd attachments/test/\n"
     test_data += "    echo You can view the stream of the test here:\n"
     test_data += '    echo "http://${ZAPPER_IP}:60010/stream"\n'
+    test_data += "    sudo apt install python3.8-venv\n"
     test_data += "    python3 -m venv env\n"
     test_data += "    . env/bin/activate\n"
     test_data += "    pip install -r requirements.txt\n"
