@@ -140,7 +140,7 @@ def create_test_data_section(
     # test_data += "    pip install -r requirements.txt\n"
     test_data += "    pip install paramiko\n"
     test_data += f"    ./scripts/call_job.py --job-config {job_config_fp} "
-    test_data += "--client-ip $ZAPPER_IP --output-dir ../../artifacts/\n"
+    test_data += "--client-ip $ZAPPER_IP --output-dir ../../artifacts/ --dut-ip $DEVICE_IP\n"
     return test_data
 
 

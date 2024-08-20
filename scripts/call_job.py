@@ -39,6 +39,12 @@ def parse_args():
         help="ip of client machine hooked up to the DUT",
     )
     parser.add_argument(
+        "--dut-ip",
+        type=str,
+        required=False,
+        help="ip of DUT",
+    )
+    parser.add_argument(
         "--output-dir",
         type=str,
         required=False,
@@ -200,7 +206,10 @@ def main():
     output_html.write_text(html, encoding="utf-8")
     if args.interactive:
         webbrowser.open(str(output_html))
-    copy_logs(args.client_ip, args.output_dir)
+    if args.dut_ip:
+        copy_logs(args.dut_ip, args.output_dir)
+    else:
+        logging.info("DUT ip address not provided, not copying logs!")
     sys.exit(0 if status else 1)
 
 
