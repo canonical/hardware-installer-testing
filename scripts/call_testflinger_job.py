@@ -56,9 +56,7 @@ def load_config(config_filepath: str) -> dict:
 
 def load_list_of_templates(job_config: dict):
     """Loads the list of templates as specified in the job config"""
-    logging.info(
-        f"Loading list of templates: {', '.join(job_config['templates'])}"
-    )
+    logging.info("Loading list of templates")
     templates = []
     for template in job_config["templates"]:
         template_dir = (ROOT_DIR / "robot" / "templates" / template).glob("*")
@@ -68,9 +66,7 @@ def load_list_of_templates(job_config: dict):
 
 def load_local_resources(job_config: dict):
     """Loads any Robot Framework 'resources' as specified in the job config"""
-    logging.info(
-        f"Loading local resources: {', '.join(job_config['resources'])}"
-    )
+    logging.info("Loading local resources")
     resources = []
     for resource in job_config["resources"]:
         resources.append(RESOURCE_DIR / resource)
