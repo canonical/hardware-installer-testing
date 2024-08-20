@@ -168,7 +168,9 @@ def execute(cmd: List[str]):
     Executes a subprocess command and yields the terminal
     output line by line
     """
-    logging.info(f"Executing {' '.join(cmd)} as subprocess")
+    logging.info(
+        f"Executing the following command as a subprocess:\n{' '.join(cmd)}"
+    )
     # pylint: disable=R1732
     popen = subprocess.Popen(
         cmd, stdout=subprocess.PIPE, universal_newlines=True
