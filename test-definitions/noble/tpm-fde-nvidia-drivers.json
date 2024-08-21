@@ -1,0 +1,11 @@
+{
+    "resources": [
+        "installer.resource",
+        "general.resource"
+    ],
+    "suite": "noble",
+    "templates": [
+        "generic"
+    ],
+    "test": "tpm-fde-nvidia-drivers.robot"
+}
