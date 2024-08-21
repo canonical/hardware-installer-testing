@@ -1,0 +1,9 @@
+---
+job_queue: 202112-29792
+provision_data:
+  url: <url>
+  robot_tasks:
+    - hp/Z2/G9/boot/boot_from_usb.robot
+  live_image: true
+  wait_until_ssh: false
+  # skip_download: true  # when the usb already has the correct iso on it

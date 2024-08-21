@@ -1,0 +1,9 @@
+---
+job_queue: 202102-28694
+provision_data:
+  url: <url>
+  robot_tasks:
+    - lenovo/thinkstation/P350/boot/boot_from_usb.robot
+  live_image: true
+  wait_until_ssh: false
+  # skip_download: true  # when the usb already has the correct iso on it

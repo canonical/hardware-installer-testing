@@ -1,0 +1,13 @@
+---
+job_queue: 202112-29792
+provision_data:
+  url: <url>
+  robot_tasks:
+    # need to add the secure boot and tpm stuff
+    # - hp/pro/sff_400_g9/secure_boot/enable.robot
+    # - hp/pro/sff_400_g9/tpm/clear_tpm.robot
+    # - hp/pro/sff_400_g9/boot/boot_from_usb.robot
+    - hp/Z2/G9/boot/boot_from_usb.robot
+  live_image: true
+  wait_until_ssh: false
+  # skip_download: true  # when the usb already has the correct iso on it
