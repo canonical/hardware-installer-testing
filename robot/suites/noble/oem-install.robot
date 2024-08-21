@@ -61,3 +61,6 @@ Wait For Install To Finish
 
 OEM Wait For Reboot To Finish And Do GIS
     OEM Wait For Reboot To Finish And Do GIS
+
+Install OpenSSHServer
+    Install OpenSSHServer

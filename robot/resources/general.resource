@@ -37,3 +37,12 @@ Post Install TPM FDE Check
     Type String     ubuntu
     Keys Combo      ${enter}
     Match   ${T}/boot-managed-by-snapd.png		20
+
+Install OpenSSHServer
+    # this needs to be reworked with snapshots to ensure the package gets installed
+    ${enter}    Create List     ENTER
+    Open Terminal
+    Type String     sudo apt install -y openssh-server
+    Keys Combo      ${enter}
+    BuiltIn.Sleep       60
+    Close Terminal

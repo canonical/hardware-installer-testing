@@ -1,6 +1,7 @@
 {
     "resources": [
-        "installer.resource"
+        "installer.resource",
+        "general.resource"
     ],
     "suite": "testing",
     "templates": [

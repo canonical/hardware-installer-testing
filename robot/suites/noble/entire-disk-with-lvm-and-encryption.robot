@@ -2,6 +2,7 @@
 Resource    ${KVM_RESOURCES}
 Resource    ${USB_RESOURCES}
 Resource    ${CURDIR}/installer.resource
+Resource    ${CURDIR}/general.resource
 
 *** Variables ***
 ${T}    ${CURDIR}
@@ -57,3 +58,6 @@ Wait For Install To Finish
 
 Wait For LVM Encrypted Reboot To Finish
     Wait For LVM Encrypted Reboot To Finish
+
+Install OpenSSHServer
+    Install OpenSSHServer

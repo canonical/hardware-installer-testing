@@ -67,3 +67,6 @@ Post Install TPM FDE Check
 
 Close Terminal
     Close Terminal
+
+Install OpenSSHServer
+    Install OpenSSHServer
