@@ -1,0 +1,10 @@
+---
+job_queue: 202203-30106
+provision_data:
+  url: asdf
+  robot_tasks:
+    # - /home/ubuntu/dell/secure_boot/enable.robot
+    - /home/ubuntu/dell/tpm/clear_tpm.robot
+  live_image: true
+  wait_until_ssh: false
+  skip_download: true  # when the usb already has the correct iso on it

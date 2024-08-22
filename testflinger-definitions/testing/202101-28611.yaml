@@ -1,0 +1,12 @@
+---
+job_queue: 202101-28611
+provision_data:
+  url: asdf
+  robot_tasks:
+    # - /home/ubuntu/dell-optiplex/secure_boot/enable.robot
+    - /home/ubuntu/dell-optiplex/tpm/clear_tpm.robot
+    # - /home/ubuntu/dell-optiplex/tpm/clear_tpm.robot
+    # - /home/ubuntu/dell-optiplex/secure_boot/disable.robot
+  live_image: true
+  wait_until_ssh: false
+  skip_download: true  # when the usb already has the correct iso on it
