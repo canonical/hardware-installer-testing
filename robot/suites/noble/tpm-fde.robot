@@ -38,11 +38,11 @@ Proprietary Software
 Select TPM FDE
     Select TPM FDE
 
-TPM Recovery Key Slide
-    TPM Recovery Key Slide
-
 Choose Where to Install Ubuntu
     Choose Where to Install Ubuntu
+
+TPM Recovery Key Slide
+    TPM Recovery Key Slide
 
 Create Account
     Create Account

@@ -406,6 +406,7 @@ Select TPM FDE
 TPM Recovery Key Slide
 	[Documentation]		Bluh
 	Match	${T}/tpm-recovery-key.png		20
+	BuiltIn.Sleep		60
 	Move Pointer To ${T}/next.png
 	EzClick
 
