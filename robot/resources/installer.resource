@@ -247,7 +247,7 @@ Wait For Reboot To Finish
 	Type String		ubuntu
 	${combo}	Create List		ENTER
 	Keys Combo		${combo}
-	Match	${T}/noble-desktop.png		180
+	Match	${T}/noble-desktop.png		360
 
 Wait For LVM Encrypted Reboot To Finish
 	[Documentation]		Waits for an encrypted reboot to finish, enters passphrase, and logs in
@@ -266,7 +266,7 @@ Wait For LVM Encrypted Reboot To Finish
 	Type String		ubuntu
 	${combo}	Create List		ENTER
 	Keys Combo		${combo}
-	Match	${T}/noble-desktop.png		180
+	Match	${T}/noble-desktop.png		360
 
 Wait For ZFS Encrypted Reboot To Finish
 	[Documentation]		Waits for an encrypted reboot to finish, enters passphrase, and logs in
@@ -285,7 +285,7 @@ Wait For ZFS Encrypted Reboot To Finish
 	Type String		ubuntu
 	${combo}	Create List		ENTER
 	Keys Combo		${combo}
-	Match	${T}/noble-desktop.png		180
+	Match	${T}/noble-desktop.png		360
 
 Skip Installer Update
 	[Documentation]		Installer update available slide

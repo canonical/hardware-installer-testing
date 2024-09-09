@@ -22,6 +22,7 @@ Write OEM Whitelabel
 Close Terminal
     Match   ${T}/terminal-topbar.png
     ${combo}    Create List     LEFT_CONTROL    W
+    Keys Combo      ${combo}
 
 Post Install TPM FDE Check
 	[Documentation]		Bluh, assumes (& checks) terminal already open

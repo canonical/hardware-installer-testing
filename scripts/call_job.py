@@ -7,6 +7,7 @@ import json
 import logging
 import os
 import pathlib
+import time
 import sys
 import webbrowser
 
@@ -135,6 +136,23 @@ def run_paramiko_command(ssh_client: paramiko.SSHClient, command: str) -> str:
     return stdout.read().decode("utf-8")
 
 
+def connect_with_paramiko(dut_ip: str, username: str, password: str, retries:int=10, delay:int=5) -> paramiko.SSHClient:
+    logging.info(f"Setting up paramiko connection to {dut_ip}")
+    for retry in range(retries):
+        logging.info(f"Attempt {retry+1} to set up connection to {dut_ip}...")
+        try:
+            ssh_client = paramiko.SSHClient()
+            ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            ssh_client.connect(hostname=dut_ip, username=username, password=password)
+            return ssh_client
+        except Exception as e:
+            logging.warning(f"Connecting to DUT failed with {e}, retrying another {retries-(retry+1)} times")
+        time.sleep(delay)
+    logging.error(f"Couldn't connect to {dut_ip} after {retries} retries")
+    sys.exit(1)
+
+
+
 def copy_logs(dut_ip: str, output_dir: str):
     """
     Copies logs under /var/log/installer/ and a journalctl
@@ -143,7 +161,6 @@ def copy_logs(dut_ip: str, output_dir: str):
     logging.info("Collecting logs from DUT")
     username = "ubuntu"
     password = "ubuntu"
-    logging.info(f"Setting up paramiko connection to {dut_ip}")
     ssh_client = paramiko.SSHClient()
     ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh_client.connect(hostname=dut_ip, username=username, password=password)
@@ -198,6 +215,7 @@ def main():
     }
     assets = gather_test_assets(templates, local_resources)
     connection = client_connect(client_ip)
+    logging.info(f"Connected to {client_ip}!")
 
     status, html = connection.root.robot_run(robot_file, assets, variables)
     print("RESULT=PASS" if status else "RESULT=FAIL")
