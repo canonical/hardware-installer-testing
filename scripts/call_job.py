@@ -144,6 +144,7 @@ def connect_with_paramiko(dut_ip: str, username: str, password: str, retries:int
             ssh_client = paramiko.SSHClient()
             ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             ssh_client.connect(hostname=dut_ip, username=username, password=password)
+            logging.info("paramiko connection set up!")
             return ssh_client
         except Exception as e:
             logging.warning(f"Connecting to DUT failed with {e}, retrying another {retries-(retry+1)} times")
@@ -161,10 +162,7 @@ def copy_logs(dut_ip: str, output_dir: str):
     logging.info("Collecting logs from DUT")
     username = "ubuntu"
     password = "ubuntu"
-    ssh_client = paramiko.SSHClient()
-    ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh_client.connect(hostname=dut_ip, username=username, password=password)
-    logging.info("paramiko connection set up!")
+    ssh_client = connect_with_paramiko(dut_ip, username, password)
     command = (
         """python3 -c 'import os; result = [os.path.join(dp, f) for dp, dn, """
         + """filenames in os.walk("/var/log/installer/") for f in filenames]; """
