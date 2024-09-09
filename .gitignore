@@ -1,2 +1,4 @@
 results/
 *.html
+*.tgz
+artifacts/
