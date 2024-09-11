@@ -218,8 +218,7 @@ Select Timezone
 
 Review Installation
 	[Documentation]		Review installation slide
-	Match	${T}/review-installation.png		20
-	BuiltIn.Sleep    10
+	Match	${T}/review-installation.png		120
 	Move Pointer To ${T}/install-button.png
 	EzClick
 
