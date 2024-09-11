@@ -41,9 +41,14 @@ Post Install TPM FDE Check
 
 Install OpenSSHServer
     # this needs to be reworked with snapshots to ensure the package gets installed
+    BuiltIn.Sleep       30
     ${enter}    Create List     ENTER
     Open Terminal
     Type String     sudo apt install -y openssh-server
     Keys Combo      ${enter}
+    BuiltIn.Sleep       5
+    Type String     ubuntu
+    Keys Combo      ${enter}
+    Match   ${T}/terminal-topbar.png
     BuiltIn.Sleep       60
     Close Terminal
