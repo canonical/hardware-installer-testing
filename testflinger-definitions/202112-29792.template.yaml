@@ -6,4 +6,5 @@ provision_data:
     - hp/Z2/G9/boot/boot_from_usb.robot
   live_image: true
   wait_until_ssh: false
+  zapper_provisioning_timeout: 10800
   # skip_download: true  # when the usb already has the correct iso on it

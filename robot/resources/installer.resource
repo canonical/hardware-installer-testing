@@ -30,7 +30,7 @@ Grub Try Or Install
 
 Select Language
 	[Documentation]		Select Language, we will default to English
-	Match	${T}/language.png		180
+	Match	${T}/language.png		600
 	Move Pointer To ${T}/next.png
 	EzClick
 
