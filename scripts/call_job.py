@@ -143,6 +143,9 @@ def connect_with_paramiko(
     retries: int = 10,
     delay: int = 5,
 ) -> paramiko.SSHClient:
+    """
+    Connects to DUT via ssh with paramiko
+    """
     logging.info(f"Setting up paramiko connection to {dut_ip}")
     for retry in range(retries):
         logging.info(f"Attempt {retry+1} to set up connection to {dut_ip}...")
@@ -154,6 +157,7 @@ def connect_with_paramiko(
             )
             logging.info("paramiko connection set up!")
             return ssh_client
+        # pylint: disable=broad-exception-caught
         except Exception as e:
             logging.warning(
                 f"Connecting to DUT failed with {e}, retrying another {retries-(retry+1)} times"
