@@ -7,8 +7,8 @@ import json
 import logging
 import os
 import pathlib
-import time
 import sys
+import time
 import webbrowser
 
 import paramiko
@@ -136,22 +136,31 @@ def run_paramiko_command(ssh_client: paramiko.SSHClient, command: str) -> str:
     return stdout.read().decode("utf-8")
 
 
-def connect_with_paramiko(dut_ip: str, username: str, password: str, retries:int=10, delay:int=5) -> paramiko.SSHClient:
+def connect_with_paramiko(
+    dut_ip: str,
+    username: str,
+    password: str,
+    retries: int = 10,
+    delay: int = 5,
+) -> paramiko.SSHClient:
     logging.info(f"Setting up paramiko connection to {dut_ip}")
     for retry in range(retries):
         logging.info(f"Attempt {retry+1} to set up connection to {dut_ip}...")
         try:
             ssh_client = paramiko.SSHClient()
             ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh_client.connect(hostname=dut_ip, username=username, password=password)
+            ssh_client.connect(
+                hostname=dut_ip, username=username, password=password
+            )
             logging.info("paramiko connection set up!")
             return ssh_client
         except Exception as e:
-            logging.warning(f"Connecting to DUT failed with {e}, retrying another {retries-(retry+1)} times")
+            logging.warning(
+                f"Connecting to DUT failed with {e}, retrying another {retries-(retry+1)} times"
+            )
         time.sleep(delay)
     logging.error(f"Couldn't connect to {dut_ip} after {retries} retries")
     sys.exit(1)
-
 
 
 def copy_logs(dut_ip: str, output_dir: str):
