@@ -11,5 +11,5 @@ jobs:
       - name: pre-commit
         run: |
           sudo apt install -y pre-commit git pylint python3-pip
-          pip3 install rpyc
+          pip3 install rpyc paramiko
           pre-commit run --all-files

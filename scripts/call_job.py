@@ -158,9 +158,10 @@ def connect_with_paramiko(
             logging.info("paramiko connection set up!")
             return ssh_client
         # pylint: disable=broad-exception-caught
-        except Exception as e:
+        except Exception as prmko_e:
             logging.warning(
-                f"Connecting to DUT failed with {e}, retrying another {retries-(retry+1)} times"
+                f"Connecting to DUT failed with {prmko_e}, "
+                + f"retrying another {retries-(retry+1)} times"
             )
         time.sleep(delay)
     logging.error(f"Couldn't connect to {dut_ip} after {retries} retries")
