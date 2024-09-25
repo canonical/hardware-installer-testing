@@ -234,12 +234,14 @@ def main():
     print("installer job finished")
     output_html = pathlib.Path(f"{args.output_dir}/client-install-test.html")
     output_html.write_text(html, encoding="utf-8")
-    if args.interactive:
-        webbrowser.open(str(output_html))
-    if args.dut_ip:
+    if args.dut_ip and status:
         copy_logs(args.dut_ip, args.output_dir)
     else:
-        logging.info("DUT ip address not provided, not copying logs!")
+        logging.info(
+            "DUT ip address not provided or result is failure, not copying logs!"
+        )
+    if args.interactive:
+        webbrowser.open(str(output_html))
     sys.exit(0 if status else 1)
 
 
