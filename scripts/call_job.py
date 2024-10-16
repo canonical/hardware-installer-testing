@@ -223,7 +223,7 @@ def main():
     # Collect variables and assets
     variables = {
         "KVM_RESOURCES": "snippets/common/common_kvm.resource",
-        "USB_RESOURCES": "resources/usb_disk.resource",
+        # "USB_RESOURCES": "resources/usb_disk.resource",
     }
     assets = gather_test_assets(templates, local_resources)
     connection = client_connect(client_ip)

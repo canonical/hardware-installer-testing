@@ -8,7 +8,7 @@ ${T}    ${CURDIR}
 Open Terminal
     ${combo}    Create List     LEFT_ALT     LEFT_CONTROL       t
     Keys Combo      ${combo}
-    Match   ${T}/terminal-topbar.png
+    Match   ${T}/terminal-topbar.png        20
 
 Write OEM Whitelabel
     ${enter}    Create List     ENTER
@@ -20,7 +20,7 @@ Write OEM Whitelabel
     BuiltIn.Sleep       3
 
 Close Terminal
-    Match   ${T}/terminal-topbar.png
+    Match   ${T}/terminal-topbar.png        20
     ${combo}    Create List     LEFT_CONTROL    W
     Keys Combo      ${combo}
 
@@ -41,7 +41,7 @@ Post Install TPM FDE Check
 
 Install OpenSSHServer
     # this needs to be reworked with snapshots to ensure the package gets installed
-    BuiltIn.Sleep       90
+    BuiltIn.Sleep       20
     ${enter}    Create List     ENTER
     Open Terminal
     Type String     sudo apt install -y openssh-server
@@ -49,6 +49,6 @@ Install OpenSSHServer
     BuiltIn.Sleep       5
     Type String     ubuntu
     Keys Combo      ${enter}
-    Match   ${T}/terminal-topbar.png
+    Match   ${T}/terminal-topbar.png        20
     BuiltIn.Sleep       60
     Close Terminal

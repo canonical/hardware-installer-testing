@@ -58,7 +58,7 @@ Disable Wired Internet Connection
 
 Internet Connection
 	[Documentation]		Connect to the Internet Slide
-	Match	${T}/internet-connection.png	20
+	Match	${T}/internet-connection.png	45
 	Move Pointer To ${T}/next.png
 	EzClick
 
@@ -228,7 +228,7 @@ Wait For Install To Finish
 	Move Pointer To ${T}/restart-button.png
 	EzClick
 	Match	${T}/remove-medium.png		2400
-	Unplug USB
+	# Unplug USB
 	${combo}	Create List		ENTER
 	Keys Combo		${combo}
 
@@ -237,7 +237,7 @@ Wait For Reboot To Finish
 	#  A sleep here isn't great... but it should do, hopefully...
 	BuiltIn.Sleep	10
 	Restart Video Input
-	Match	${T}/login-prompt.png		600
+	Match	${T}/login-prompt.png		900
 	Move Pointer To ${T}/login-prompt.png
 	EzClick
 	${combo}	Create List		ENTER
@@ -250,6 +250,9 @@ Wait For Reboot To Finish
 
 Wait For LVM Encrypted Reboot To Finish
 	[Documentation]		Waits for an encrypted reboot to finish, enters passphrase, and logs in
+	###########################################################################
+	# Needs to be amended to use Read Text instead, as resolution for passphrase input can vary from machine to machine
+	###########################################################################
 	BuiltIn.Sleep	10
 	Restart Video Input
 	Match	${T}/lvm-passphrase-input.png		1200
@@ -269,6 +272,9 @@ Wait For LVM Encrypted Reboot To Finish
 
 Wait For ZFS Encrypted Reboot To Finish
 	[Documentation]		Waits for an encrypted reboot to finish, enters passphrase, and logs in
+	###########################################################################
+	# Needs to be amended to use Read Text instead, as resolution for passphrase input can vary from machine to machine
+	###########################################################################
 	BuiltIn.Sleep	10
 	Restart Video Input
 	Match	${T}/zfs-passphrase-input.png		1200

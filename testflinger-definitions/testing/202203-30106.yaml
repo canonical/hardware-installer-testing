@@ -1,10 +1,12 @@
 ---
 job_queue: 202203-30106
 provision_data:
-  url: asdf
+  url: https://tel-image-cache.canonical.com/cdimage/noble/daily-live/current/noble-desktop-amd64.iso
   robot_tasks:
-    # - /home/ubuntu/dell/secure_boot/enable.robot
-    - /home/ubuntu/dell/tpm/clear_tpm.robot
+    - /home/ubuntu/dell/secure_boot/enable.robot
+    # - /home/ubuntu/dell/secure_boot/disable.robot
+    # - /home/ubuntu/dell/tpm/clear_tpm.robot
+    # - /home/ubuntu/dell/boot/boot_from_usb.robot
   live_image: true
   wait_until_ssh: false
   skip_download: true  # when the usb already has the correct iso on it
