@@ -1,6 +1,6 @@
 *** Settings ***
 Resource    ${KVM_RESOURCES}
-Resource    ${USB_RESOURCES}
+#Resource    ${USB_RESOURCES}
 Resource    ${CURDIR}/installer.resource
 Resource    ${CURDIR}/general.resource
 

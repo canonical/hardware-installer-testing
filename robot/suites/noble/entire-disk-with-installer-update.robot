@@ -1,7 +1,7 @@
 # after the installer exits, post update, there's no try or install
 *** Settings ***
 Resource    ${KVM_RESOURCES}
-Resource    ${USB_RESOURCES}
+#Resource    ${USB_RESOURCES}
 Resource    ${CURDIR}/installer.resource
 Resource    ${CURDIR}/general.resource
 

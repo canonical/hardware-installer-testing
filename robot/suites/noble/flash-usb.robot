@@ -1,5 +1,5 @@
 *** Settings ***
-Resource    ${USB_RESOURCES}
+#Resource    ${USB_RESOURCES}
 
 *** Variables ***
 ${T}    ${CURDIR}
