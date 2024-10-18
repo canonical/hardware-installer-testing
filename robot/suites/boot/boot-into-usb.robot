@@ -1,10 +1,12 @@
 *** Settings ***
 Resource    ${KVM_RESOURCES}
-#Resource    ${USB_RESOURCES}
-Library    Collections
+# Resource    ${USB_RESOURCES}
+Library     Collections
+
 
 *** Variables ***
 ${T}    ${CURDIR}
+
 
 *** Test Cases ***
 Enter Boot Menu
@@ -16,8 +18,8 @@ Select And Boot From USB
     Keys Combo    ${combo}
     Keys Combo    ${combo}
     Keys Combo    ${combo}
-    Match   ${T}/usb-selected.png       20
-    ${combo}    Create List     RETURN
+    Match    ${T}/usb-selected.png    20
+    ${combo}    Create List    RETURN
     Keys Combo    ${combo}
-    Match   ${T}/grub-menu.png
+    Match    ${T}/grub-menu.png
     Keys Combo    ${combo}
