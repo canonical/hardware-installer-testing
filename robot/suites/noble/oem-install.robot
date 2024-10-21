@@ -14,6 +14,7 @@ Exit Installer
     Exit Installer
 
 Open Terminal
+    BuiltIn.Sleep    60
     Open Terminal
 
 Write OEM WhiteLabel

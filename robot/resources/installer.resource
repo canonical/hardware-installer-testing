@@ -52,7 +52,8 @@ Disable Wired Internet Connection
     [Documentation]    Disable internet connection via the top panel to test an install with no internet
     Move Pointer To (100, 100)
     # Move Pointer To ${T}/open-top-panel.png
-    Move Pointer To Proportional             1       0
+    # Move Pointer To Proportional    1    0
+    Move Pointer To (100000, 0)
     EzClick
     Move Pointer To ${T}/click-connection.png
     EzClick
@@ -341,11 +342,11 @@ Update Installer
     [Documentation]    Updates the installer snap and reinstalls it
     ${update_available}    Run Keyword And Return Status    Match    ${T}/installer-update-available.png    20
     IF ${update_available} == ${True}
-        Match    ${T}/installer-update-available.png    20
-        Move Pointer To ${T}/update-now.png
-        EzClick
-        Match    ${T}/updating-installer.png    20
-        Match    ${T}/installer-update-ready.png    300
+    Match    ${T}/installer-update-available.png    20
+    Move Pointer To ${T}/update-now.png
+    EzClick
+    Match    ${T}/updating-installer.png    20
+    Match    ${T}/installer-update-ready.png    300
     END
     Move Pointer To ${T}/close-installer.png
     EzClick
