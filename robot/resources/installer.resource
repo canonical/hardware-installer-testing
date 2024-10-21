@@ -38,7 +38,7 @@ Select Language
 
 A11y Slide
     [Documentation]    Accessibility Slide
-    Match    ${T}/a11y.png    20
+    Match    ${T}/a11y.png    120
     Move Pointer To ${T}/next.png
     EzClick
 
@@ -51,10 +51,11 @@ Keyboard Layout
 Disable Wired Internet Connection
     [Documentation]    Disable internet connection via the top panel to test an install with no internet
     Move Pointer To (100, 100)
-    # Move Pointer To ${T}/open-top-panel.png
+    EzClick
+    Move Pointer To ${T}/open-top-panel.png
     # Move Pointer To Proportional    1    0
     # Move Pointer To (100000, 0)
-    Walk Mouse To Proportional    1    0    0.05    0.1
+    # Walk Mouse To Proportional    1    0    0.05    0.1
     EzClick
     Move Pointer To ${T}/click-connection.png
     EzClick
