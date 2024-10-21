@@ -53,7 +53,8 @@ Disable Wired Internet Connection
     Move Pointer To (100, 100)
     # Move Pointer To ${T}/open-top-panel.png
     # Move Pointer To Proportional    1    0
-    Move Pointer To (100000, 0)
+    # Move Pointer To (100000, 0)
+    Walk Mouse To Proportional    1    0    0.05    0.1
     EzClick
     Move Pointer To ${T}/click-connection.png
     EzClick
