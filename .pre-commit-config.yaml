@@ -33,5 +33,5 @@ repos:
     hooks:
       - id: robotidy
         name: robotidy
-        entry: pip install robotframework-tidy && robotidy .
+        entry: pip install robotframework-tidy --break-system-packages && robotidy .
         language: system
