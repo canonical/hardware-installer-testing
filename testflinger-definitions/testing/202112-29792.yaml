@@ -1,7 +1,7 @@
 ---
 job_queue: 202112-29792
 provision_data:
-  url: https://tel-image-cache.canonical.com/cdimage/noble/daily-live/current/noble-desktop-amd64.iso
+  url: https://tel-image-cache.canonical.com/cdimage/noble/daily-live/current/noble-desktop-amd64.iso  # yamllint disable-line rule:line-length
   robot_tasks:
     # - /home/ubuntu/hp/secure_boot/enable.robot
     # - /home/ubuntu/hp/secure_boot/disable.robot

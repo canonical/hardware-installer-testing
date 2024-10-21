@@ -1,7 +1,7 @@
 ---
 job_queue: 202102-28694
 provision_data:
-  url: https://tel-image-cache.canonical.com/cdimage/noble/daily-live/current/noble-desktop-amd64.iso
+  url: https://tel-image-cache.canonical.com/cdimage/noble/daily-live/current/noble-desktop-amd64.iso  # yamllint disable-line rule:line-length
   robot_tasks:
     # - /home/ubuntu/lenovo/boot/boot_from_usb.robot
     # - /home/ubuntu/lenovo/secure_boot/enable.robot
