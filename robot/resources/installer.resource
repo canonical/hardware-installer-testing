@@ -51,7 +51,7 @@ Keyboard Layout
 Disable Wired Internet Connection
     [Documentation]    Disable internet connection via the top panel to test an install with no internet
     Move Pointer To (100, 100)
-    Match    ${T}/open-top-panel.png    600
+    Match     ${T}/open-top-panel.png       600
     Move Pointer To ${T}/open-top-panel.png
     EzClick
     Move Pointer To ${T}/click-connection.png
